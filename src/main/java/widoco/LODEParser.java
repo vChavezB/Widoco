@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URLDecoder;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Properties;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -182,6 +183,7 @@ public class LODEParser {
 								"<h3 id=\"namedindividuals\" class=\"list\">"
 										+ langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h3>");
 						break;
+					/*missing: rules!*/
 					case "swrlrules":
 						ruleList = (getTermList(html.item(i)));
 						if (ruleList != null) {
@@ -191,6 +193,7 @@ public class LODEParser {
 											+ langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h3>");
 						}
 						break;
+
 				}
 			}
 			// fix ids
@@ -228,6 +231,7 @@ public class LODEParser {
 			logger.error(MarkerFactory.getMarker("FATAL"), ex.getMessage());
 		}
 	}
+
 
 	private String getTermList(Node n) {
 		String AttrID = n.getAttributes().item(0).getTextContent();
