@@ -183,14 +183,38 @@ public class LODEParser {
 										+ langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h3>");
 						break;
 					/*missing: rules!*/
-					case "rules":
+					case "swrlrules":
+
+						/*
 						ruleList = (getTermList(html.item(i)));
 						rules = (nodeToString(html.item(i)));
-//						rules = rules.replace(
-//								"<h2>" + langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h2>",
-//								"<h3 id=\"rules\" class=\"list\">"
-//										+ langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h3>");
+						rules = rules.replace(
+								"<h2>" + langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h2>",
+								"<h3 id=\"rules\" class=\"list\">"
+										+ langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h3>");
 						break;
+						*/
+						NodeList ruleEntities = html.item(i).getChildNodes();
+
+						for (int j = 0; j < ruleEntities.getLength(); j++) {
+							Node ruleEntity = ruleEntities.item(j);
+
+							if (ruleEntity.getNodeName().equals("div")) {
+								Node classAttribute = ruleEntity.getAttributes().getNamedItem("class");
+
+								if (classAttribute != null && classAttribute.getNodeValue().equals("entity")) {
+									ruleList += nodeToString(ruleEntity);
+								}
+							}
+						}
+
+						rules = ruleList;
+						rules = rules.replace(
+								"<h2>" + langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h2>",
+								"<h3 id=\"rules\" class=\"list\">"
+										+ langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h3>");
+						break;
+
 				}
 			}
 			// fix ids
@@ -228,6 +252,7 @@ public class LODEParser {
 			logger.error(MarkerFactory.getMarker("FATAL"), ex.getMessage());
 		}
 	}
+
 
 	private String getTermList(Node n) {
 		NodeList divs = n.getChildNodes();
