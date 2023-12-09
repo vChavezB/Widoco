@@ -33,6 +33,8 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
         <div id="{generate-id()}" class="entity">
             <h3>Rule #<xsl:value-of select="count(preceding-sibling::swrl:Imp | preceding-sibling::rdf:Description[rdf:type[@rdf:resource = 'http://www.w3.org/2003/11/swrl#Imp']]) + 1" /> <xsl:call-template name="get.backlink.to.top" /></h3>
             <p>
+                <xsl:apply-templates select="rdfs:label" />
+                <xsl:apply-templates select="rdfs:comment" />
                 <xsl:apply-templates select="swrl:body" />
                 <xsl:text> -> </xsl:text>
                 <xsl:apply-templates select="swrl:head" />
