@@ -130,12 +130,36 @@ public class Configuration {
 	private boolean changeLogSuccessfullyCreated = true;
 
 
+	public void list_files(String directoryPath) {
+
+		// Create a File object representing the directory
+		File directory = new File(directoryPath);
+
+		// Check if the specified path is a directory
+		if (directory.isDirectory()) {
+			// Get the list of files in the directory
+			File[] files = directory.listFiles();
+
+			// Log each file name
+			if (files != null) {
+				for (File file : files) {
+					logger.info(file.getName());
+				}
+			} else {
+				logger.warn("Failed to list files in the directory.");
+			}
+		} else {
+			logger.warn("Specified path is not a directory.");
+		}
+	}
+
 	private void copyPathFilesTo(String resourceName, File destinationFolder) throws IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
 		URL resource = classLoader.getResource(resourceName);
+		logger.info("Copying resource folder "+ resource);
 
 		if (resource == null) {
-			throw new IllegalArgumentException("Resource not found: " + resourceName);
+			throw new IllegalArgumentException("Resource not found: " + resource.toString());
 		}
 
 		try {
@@ -143,11 +167,12 @@ public class Configuration {
 
 			// Ensure the destination folder exists
 			if (!destinationFolder.exists()) {
-				destinationFolder.mkdirs();
+				throw new IOException("Resources folder " +resource.toURI()+ " does not exist" );
 			}
 
 			// Copy only the contents of the source folder to the destination folder
 			FileUtils.copyDirectory(sourceFolder, destinationFolder);
+			list_files(destinationFolder.getAbsolutePath());
 		} catch (URISyntaxException e) {
 			throw new IOException("Error copying resources to the temp folder: " + e.getMessage(), e);
 		}
