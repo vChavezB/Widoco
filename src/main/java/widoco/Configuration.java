@@ -16,14 +16,13 @@
 package widoco;
 
 import java.awt.Image;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.io.FileUtils;
@@ -155,29 +154,52 @@ public class Configuration {
 
 	private void copyPathFilesTo(String resourceName, File destinationFolder) throws IOException {
 		ClassLoader classLoader = getClass().getClassLoader();
-		URL resource = classLoader.getResource(resourceName);
-		logger.info("Copying resource folder "+ resource);
+		URL resourceUrl = classLoader.getResource(resourceName);
 
-		if (resource == null) {
-			throw new IllegalArgumentException("Resource not found: " + resource.toString());
+		if (resourceUrl == null) {
+			throw new IllegalArgumentException("Resource not found: " + resourceName);
 		}
 
 		try {
-			File sourceFolder = new File(resource.toURI());
+			if ("file".equals(resourceUrl.getProtocol())) {
+				// Running from source code (not a JAR)
+				File sourceFolder = new File(resourceUrl.toURI());
+				FileUtils.copyDirectory(sourceFolder, destinationFolder);
+			} else if ("jar".equals(resourceUrl.getProtocol())) {
+				// Running from a JAR
+				try (InputStream resourceStream = classLoader.getResourceAsStream(resourceName);
+					 ZipInputStream zipInputStream = new ZipInputStream(resourceStream)) {
 
-			// Ensure the destination folder exists
-			if (!destinationFolder.exists()) {
-				throw new IOException("Resources folder " +resource.toURI()+ " does not exist" );
+					ZipEntry zipEntry;
+					while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+						String entryName = zipEntry.getName();
+						File entryFile = new File(destinationFolder, entryName);
+
+						if (zipEntry.isDirectory()) {
+							if (!entryFile.exists() && !entryFile.mkdirs()) {
+								throw new IOException("Failed to create directory: " + entryFile.getAbsolutePath());
+							}
+						} else {
+							// Copy file content
+							try (FileOutputStream fileOutputStream = new FileOutputStream(entryFile)) {
+								byte[] buffer = new byte[1024];
+								int bytesRead;
+								while ((bytesRead = zipInputStream.read(buffer)) != -1) {
+									fileOutputStream.write(buffer, 0, bytesRead);
+								}
+							}
+						}
+					}
+				}
+			} else {
+				throw new UnsupportedOperationException("Unsupported resource URL protocol: " + resourceUrl.getProtocol());
 			}
 
-			// Copy only the contents of the source folder to the destination folder
-			FileUtils.copyDirectory(sourceFolder, destinationFolder);
 			list_files(destinationFolder.getAbsolutePath());
-		} catch (URISyntaxException e) {
+		} catch (Exception e) {
 			throw new IOException("Error copying resources to the temp folder: " + e.getMessage(), e);
 		}
 	}
-
 	public Configuration() {
 		initializeConfig();
 		try {
