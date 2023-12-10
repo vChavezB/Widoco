@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 package widoco;
-
+import java.util.Objects;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
