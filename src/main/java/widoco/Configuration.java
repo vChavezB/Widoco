@@ -26,6 +26,7 @@ import java.net.URL;
 import java.util.*;
 import javax.imageio.ImageIO;
 
+import org.apache.commons.io.FileUtils;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.rdf.rdfxml.renderer.OWLOntologyXMLNamespaceManager;
 import org.slf4j.Logger;
@@ -128,13 +129,37 @@ public class Configuration {
 	 */
 	private boolean changeLogSuccessfullyCreated = true;
 
+
+	private void copyPathFilesTo(String resourceName, File destinationFolder) throws IOException {
+		ClassLoader classLoader = getClass().getClassLoader();
+		URL resource = classLoader.getResource(resourceName);
+
+		if (resource == null) {
+			throw new IllegalArgumentException("Resource not found: " + resourceName);
+		}
+
+		try {
+			File sourceFolder = new File(resource.toURI());
+
+			// Ensure the destination folder exists
+			if (!destinationFolder.exists()) {
+				destinationFolder.mkdirs();
+			}
+
+			// Copy only the contents of the source folder to the destination folder
+			FileUtils.copyDirectory(sourceFolder, destinationFolder);
+		} catch (URISyntaxException e) {
+			throw new IOException("Error copying resources to the temp folder: " + e.getMessage(), e);
+		}
+	}
+
 	public Configuration() {
 		initializeConfig();
 		try {
 			// create a temporal folder with all LODE resources
 			tmpFolder = new File("tmp" + new Date().getTime());
 			tmpFolder.mkdir();
-			WidocoUtils.unZipIt(Constants.LODE_RESOURCES, tmpFolder.getName());
+			copyPathFilesTo("lode", tmpFolder);
 		} catch (Exception ex) {
 			logger.error("Error while creating the temporal file for storing the intermediate Widoco files.");
 		}
