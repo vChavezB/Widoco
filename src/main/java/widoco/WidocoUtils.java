@@ -16,20 +16,19 @@
 
 package widoco;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Collections;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.io.FileUtils;
+import org.eclipse.rdf4j.common.io.ResourceUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -171,7 +170,7 @@ public class WidocoUtils {
 	// return;
 	// }
 	// model.read(in, null, s);
-	// System.out.println("Vocab loaded in "+s);
+	// logger.info("Vocab loaded in "+s);
 	// if(s.equals("RDF/XML")){
 	// ext="xml";
 	// }else if(s.equals("TTL")){
@@ -189,14 +188,102 @@ public class WidocoUtils {
 	//
 	// }
 
-	public static void copyResourceFolder(String[] resources, String savePath) throws IOException {
-		for (String resource : resources) {
-			String aux = resource.substring(resource.lastIndexOf("/") + 1, resource.length());
-			File b = new File(savePath + File.separator + aux);
-			b.createNewFile();
-			copyLocalResource(resource, b);
+
+	public static void copyResourceDir(String resourceFolder, File destinationFolder) throws IOException {
+		// Determine if running from JAR or as source
+		logger.info("copyResourceFolder from "+resourceFolder+" to "+ destinationFolder);
+		URL resourceUrl = WidocoUtils.class.getClassLoader().getResource(resourceFolder);
+		if (!destinationFolder.exists())
+			destinationFolder.mkdirs();
+		if (resourceUrl == null || !resourceUrl.getProtocol().equals("file")) {
+			// Running from JAR, use getResourceAsStream
+			copyDirFromJar(resourceFolder, destinationFolder);
+
+		} else {
+			// Running from source, use Files.copy
+			copyDirFromSrc(resourceFolder, destinationFolder);
 		}
+
 	}
+
+
+	public static final char JAR_SEPARATOR = '/';
+
+	// inspired from
+	// https://github.com/TriggerReactor/TriggerReactor/blob/7e71958b27231032c04d09795122dfc1d80c51b1/core/src/main/java/io/github/wysohn/triggerreactor/tools/JarUtil.java
+	public static void copyDirFromJar(String folderName, File destFolder) throws IOException {
+
+		byte[] buffer = new byte[1024];
+		File fullPath = null;
+		String path = WidocoUtils.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		try {
+			if (!path.startsWith("file"))
+				path = "file://" + path;
+
+			fullPath = new File(new URI(path));
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(fullPath));
+
+		ZipEntry entry;
+		while ((entry = zis.getNextEntry()) != null) {
+			if (!entry.getName().startsWith(folderName + JAR_SEPARATOR))
+				continue;
+
+			String fileName = entry.getName();
+
+			// Remove the folderName from the fileName
+			fileName = fileName.substring((folderName + JAR_SEPARATOR).length());
+
+			File file = new File(destFolder + File.separator + fileName);
+
+			if (fileName.isEmpty() || fileName.charAt(fileName.length() - 1) == JAR_SEPARATOR) {
+				// Skip empty or directory entries
+				continue;
+			}
+
+			if (!file.getParentFile().exists())
+				file.getParentFile().mkdirs();
+
+			if (!file.exists())
+				file.createNewFile();
+			FileOutputStream fos = new FileOutputStream(file);
+
+			int len;
+			while ((len = zis.read(buffer)) > 0) {
+				fos.write(buffer, 0, len);
+			}
+			fos.close();
+		}
+		zis.closeEntry();
+		zis.close();
+	}
+
+	private static void copyDirFromSrc(String resourceFolder, File destinationFolder) throws IOException {
+		URL resource = WidocoUtils.class.getClassLoader().getResource(resourceFolder);
+
+		if (resource == null) {
+			throw new IllegalArgumentException("Resource not found: " + resourceFolder);
+		}
+		try {
+			File sourceFolder = new File(resource.toURI());
+			// Copy only the contents of the source folder to the destination folder
+			FileUtils.copyDirectory(sourceFolder, destinationFolder);
+		} catch (URISyntaxException e) {
+			throw new IOException("Error copying resources to the temp folder: " + e.getMessage(), e);
+		} catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+	/**
+	 * Copy contents of a resource folder
+	 *
+	 * @param src source folder
+	 * @param dst destination folder
+	 */
+
 
 	/**
 	 * Method used to copy the local files: styles, images, etc.
@@ -261,7 +348,7 @@ public class WidocoUtils {
 				if (!newFile.toPath().normalize().startsWith(outputFolder)) {
 					throw new RuntimeException("Bad zip entry");
 				}
-				// System.out.println("file unzip : "+ newFile.getAbsoluteFile());
+				// logger.info("file unzip : "+ newFile.getAbsoluteFile());
 				if (ze.isDirectory()) {
 					String temp = newFile.getAbsolutePath();
 					new File(temp).mkdirs();
