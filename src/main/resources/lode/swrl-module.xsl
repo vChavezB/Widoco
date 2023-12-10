@@ -28,18 +28,32 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
     xmlns:f="http://www.essepuntato.it/xslt/function"
     xmlns:dcterms="http://purl.org/dc/terms/"
     xmlns="http://www.w3.org/1999/xhtml">
-    
+
     <xsl:template match="swrl:Imp | rdf:Description[rdf:type[@rdf:resource = 'http://www.w3.org/2003/11/swrl#Imp']]">
         <div id="{generate-id()}" class="entity">
-            <h3>Rule #<xsl:value-of select="count(preceding-sibling::swrl:Imp | preceding-sibling::rdf:Description[rdf:type[@rdf:resource = 'http://www.w3.org/2003/11/swrl#Imp']]) + 1" /> <xsl:call-template name="get.backlink.to.top" /></h3>
+            <h3>
+                <xsl:value-of select="concat('Rule #', count(preceding-sibling::swrl:Imp | preceding-sibling::rdf:Description[rdf:type[@rdf:resource = 'http://www.w3.org/2003/11/swrl#Imp']]) + 1, ' ', rdfs:label)" />
+                <xsl:call-template name="get.backlink.to.top" />
+            </h3>
             <p>
+                <!-- Add rdfs:label -->
+                <xsl:if test="rdfs:label">
+                    <strong>Label:</strong>
+                    <xsl:value-of select="rdfs:label" /><br />
+                </xsl:if>
+                <!-- Add rdfs:comment -->
+                <xsl:if test="rdfs:comment">
+                    <strong>Comment:</strong>
+                    <xsl:value-of select="rdfs:comment" /><br />
+                </xsl:if>
+                <!-- Continue with the existing content -->
                 <xsl:apply-templates select="swrl:body" />
                 <xsl:text> -> </xsl:text>
                 <xsl:apply-templates select="swrl:head" />
             </p>
         </div>
     </xsl:template>
-    
+
     <xsl:template match="swrl:body | swrl:head | swrl:AtomList/rdf:first | rdf:Description[rdf:type[@rdf:resource = 'http://www.w3.org/2003/11/swrl#AtomList']]/rdf:first">
         <xsl:apply-templates />
     </xsl:template>
