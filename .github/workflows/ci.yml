@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [develop, master]
+    branches: [load-resouce-from-folder, master]
     tags:
      - 'v*'
   pull_request:
