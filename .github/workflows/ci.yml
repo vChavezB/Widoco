@@ -34,7 +34,7 @@ jobs:
             rm -rf /home/runner/.m2/repository/net/sourceforge/owlapi/owlapi-distribution/5.1.18/owlapi-distribution-5.1.18.jar
             mv deps/owlapi-distribution-5.1.18.jar /home/runner/.m2/repository/net/sourceforge/owlapi/owlapi-distribution/5.1.18
       - name: Build with Maven
-        run: mvn compile
+        run:  mvn -e --batch-mode package
       - name: Include JDK in filename
         run: |
           FN=$(ls JAR/*.jar)
