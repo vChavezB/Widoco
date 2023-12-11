@@ -27,6 +27,8 @@ jobs:
           java-version:  ${{ matrix.jdk }}
           distribution: 'zulu'
           cache: maven
+      - name: validate
+        run: mvn validate
       - name: Build with Maven
         run: mvn -e --batch-mode package
       - name: Include JDK in filename
