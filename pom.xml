@@ -90,7 +90,7 @@
 			   	<artifactId>owlapi-distribution</artifactId>
 		   		<version>5.1.18</version>
 			      <packaging>jar</packaging>
-			      <file>${basedir}/deps/owlapi-distribution-5.1.18.jar</file>
+			      <file>${basedir}/deps/owlapi-api-5.1.18.jar</file>
 			      <generatePom>true</generatePom>
 			   </configuration>
 			   <executions>
