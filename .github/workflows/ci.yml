@@ -30,7 +30,7 @@ jobs:
       - name: validate
         run: mvn validate
       - name: Build with Maven
-        run: mvn -e --batch-mode package
+        run: mvn compile
       - name: Include JDK in filename
         run: |
           FN=$(ls JAR/*.jar)
