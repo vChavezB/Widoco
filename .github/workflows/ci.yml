@@ -27,8 +27,10 @@ jobs:
           java-version:  ${{ matrix.jdk }}
           distribution: 'zulu'
           cache: maven
-      - name: validate
-        run: mvn validate
+      - name: resolve
+        run: mvn dependency:resolve
+      - name: find
+        run: find / -name owlapi-distribution-5.1.18.jar
       - name: Build with Maven
         run: mvn compile
       - name: Include JDK in filename
