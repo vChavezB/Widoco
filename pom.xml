@@ -51,7 +51,11 @@
 			<version>9.4</version>
 		</dependency>
 
-	
+		<dependency>
+			<groupId>net.sourceforge.owlapi</groupId>
+			<artifactId>owlapi-distribution</artifactId>
+			<version>5.1.18</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.googlecode.json-simple </groupId>
@@ -79,30 +83,6 @@
 	<build>
 
 		<plugins>
-
-
-			<plugin>
-			   <groupId>org.apache.maven.plugins</groupId>
-			   <artifactId>maven-install-plugin</artifactId>
-			   <version>3.1.1</version>
-			   <configuration>
-			        <groupId>net.sourceforge.owlapi</groupId>
-			   	<artifactId>owlapi-distribution</artifactId>
-		   		<version>5.1.18</version>
-			      <packaging>jar</packaging>
-			      <file>${basedir}/deps/owlapi-api-5.1.18.jar</file>
-			      <generatePom>true</generatePom>
-			   </configuration>
-			   <executions>
-			      <execution>
-			         <id>install-jar-lib</id>
-			         <goals>
-			            <goal>install-file</goal>
-			         </goals>
-			         <phase>validate</phase>
-			      </execution>
-			   </executions>
-			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
