@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Properties;
+import java.util.Objects;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,6 +66,8 @@ public class LODEParser {
 	private String namedIndividualList;
 	private String rules;
 	private String ruleList;
+	private String swrlrules;
+	private String swrlruleslist;
 	Configuration c;
 
 	/**
@@ -133,6 +136,14 @@ public class LODEParser {
 		return ruleList;
 	}
 
+	public String getSwrlrules() {
+		return swrlrules;
+	}
+
+	public String getSwrlruleslist() {
+		return swrlruleslist;
+	}
+
 	private void parse(String content, Properties langFile) {
 
 		try {
@@ -190,6 +201,12 @@ public class LODEParser {
 //								"<h2>" + langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h2>",
 //								"<h3 id=\"rules\" class=\"list\">"
 //										+ langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h3>");
+						break;
+					case "swrlrules":
+						swrlruleslist = (getTermList(html.item(i)));
+						swrlrules = (nodeToString(html.item(i)));
+						swrlrules = swrlrules.replace("<h2>SWRL rules</h2>",
+								"<h3 id=\"namedindividuals\" class=\"list\">SWRL rules</h3>");
 						break;
 				}
 			}
@@ -263,6 +280,12 @@ public class LODEParser {
 	// (the second one)
 	private Node fixAnchor(Node nodeToFix) {
 		try {
+			String AttrID = nodeToFix.getAttributes().item(0).getTextContent();
+			// Do nothing for swrl rules, they do not have
+			// <a> and <h3>
+			if (Objects.equals(AttrID, "swrlrules")) {
+				return nodeToFix;
+			}
 			NodeList outerDiv = nodeToFix.getChildNodes();
 			for (int i = 0; i < outerDiv.getLength(); i++) {
 				Node currentNode = outerDiv.item(i);
