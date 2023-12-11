@@ -30,7 +30,9 @@ jobs:
       - name: resolve
         run: mvn dependency:resolve
       - name: find
-        run: find / -name owlapi-distribution-5.1.18.jar
+        run: |
+            rm -rf /home/runner/.m2/repository/net/sourceforge/owlapi/owlapi-distribution/5.1.18/owlapi-distribution-5.1.18.jar
+            mv deps/owlapi-distribution-5.1.18.jar /home/runner/.m2/repository/net/sourceforge/owlapi/owlapi-distribution/5.1.18
       - name: Build with Maven
         run: mvn compile
       - name: Include JDK in filename
