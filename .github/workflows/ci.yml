@@ -30,6 +30,9 @@ jobs:
       - name: install owl api
         run: | 
             mvn install:install-file -Dfile=owlapi-distribution-5.1.18.jar -DgroupId=myGroup -DartifactId=owlapi -Dversion=5.1.18 -Dpackaging=jar
+            mkdir -p lib/myGroup/owlapi/5.1.18
+            mv /home/runner/.m2/repository/myGroup/owlapi/5.1.18/* lib/myGroup/owlapi/5.1.18
+            ls lib/myGroup/owlapi/5.1.18
       - name: Build with Maven
         run: mvn -e --batch-mode package
       - name: Include JDK in filename
