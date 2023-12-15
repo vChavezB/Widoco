@@ -45,7 +45,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.w3c.dom.DOMImplementation;
-import org.w3c.dom.Element as W3CElement;
+ 
 
 /**
  * Class made for parsing and manipulating LODE's html. This class contains most
@@ -160,7 +160,7 @@ private static Document convertToW3CDocument(org.jsoup.nodes.Document jsoupDoc) 
     }
 
     private static W3CElement convertToW3CElement(Document w3cDoc, org.jsoup.nodes.Element jsoupElement) {
-        W3CElement w3cElement = w3cDoc.createElement(jsoupElement.tagName());
+        org.w3c.dom.Element w3cElement = w3cDoc.createElement(jsoupElement.tagName());
 
         // Copy attributes
         jsoupElement.attributes().forEach(attribute -> w3cElement.setAttribute(attribute.getKey(), attribute.getValue()));
