@@ -159,7 +159,7 @@ private static Document convertToW3CDocument(org.jsoup.nodes.Document jsoupDoc) 
         }
     }
 
-    private static W3CElement convertToW3CElement(Document w3cDoc, org.jsoup.nodes.Element jsoupElement) {
+    private static org.w3c.dom.Element convertToW3CElement(Document w3cDoc, org.jsoup.nodes.Element jsoupElement) {
         org.w3c.dom.Element w3cElement = w3cDoc.createElement(jsoupElement.tagName());
 
         // Copy attributes
@@ -167,7 +167,7 @@ private static Document convertToW3CDocument(org.jsoup.nodes.Document jsoupDoc) 
 
         // Recursively copy child nodes
         jsoupElement.children().forEach(jsoupChild -> {
-            W3CElement w3cChild = convertToW3CElement(w3cDoc, jsoupChild);
+            org.w3c.dom.Element  w3cChild = convertToW3CElement(w3cDoc, jsoupChild);
             w3cElement.appendChild(w3cChild);
         });
 
@@ -191,7 +191,7 @@ private static Document convertToW3CDocument(org.jsoup.nodes.Document jsoupDoc) 
 			ruleNumber++;
 		}
 
-		return doc.html();
+		return w3cDoc.html();
 	}
 
 	private static Element createImageElement(String rulesPath, int ruleNumber, String type) {
