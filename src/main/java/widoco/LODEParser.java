@@ -140,9 +140,40 @@ public class LODEParser {
 	public String getRuleList() {
 		return ruleList;
 	}
+private static Document convertToW3CDocument(org.jsoup.nodes.Document jsoupDoc) {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        try {
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            DOMImplementation domImpl = builder.getDOMImplementation();
+            Document w3cDoc = domImpl.createDocument(null, null, null);
 
+            // Recursively copy nodes from jsoup document to w3c document
+            W3CElement root = convertToW3CElement(w3cDoc, jsoupDoc.children().first());
+            w3cDoc.appendChild(root);
+
+            return w3cDoc;
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static W3CElement convertToW3CElement(Document w3cDoc, org.jsoup.nodes.Element jsoupElement) {
+        W3CElement w3cElement = w3cDoc.createElement(jsoupElement.tagName());
+
+        // Copy attributes
+        jsoupElement.attributes().forEach(attribute -> w3cElement.setAttribute(attribute.getKey(), attribute.getValue()));
+
+        // Recursively copy child nodes
+        jsoupElement.children().forEach(jsoupChild -> {
+            W3CElement w3cChild = convertToW3CElement(w3cDoc, jsoupChild);
+            w3cElement.appendChild(w3cChild);
+        });
+
+        return w3cElement;
+    }
 	public static String addImagesToEntities(String html, String rulesPath) {
-		Document doc = Jsoup.parse(html);
+		Document w3cDoc = convertToW3CDocument(Jsoup.parse(html));
 
 		Elements entities = doc.setTextContent(".entity");
 		int ruleNumber = 1;
