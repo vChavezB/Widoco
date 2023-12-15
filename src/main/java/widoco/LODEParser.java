@@ -44,7 +44,8 @@ import org.xml.sax.SAXException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Element as W3CElement;
 
 /**
  * Class made for parsing and manipulating LODE's html. This class contains most
