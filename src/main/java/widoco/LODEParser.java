@@ -141,7 +141,18 @@ public class LODEParser {
 	public String getRuleList() {
 		return ruleList;
 	}
-
+private static String convertW3CDocumentToHtml(Document w3cDoc) {
+        try {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            StringWriter writer = new StringWriter();
+            transformer.transform(new DOMSource(w3cDoc), new StreamResult(writer));
+            return writer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error converting W3C Document to HTML";
+        }
+    }
 	public static String addImagesToEntities(String html, String rulesPath) {
         org.jsoup.nodes.Document jsoupDoc = Jsoup.parse(html);
         Document w3cDoc = convertToW3CDocument(jsoupDoc);
