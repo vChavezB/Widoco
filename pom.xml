@@ -32,12 +32,12 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.30</version>
+			<version>2.0.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.30</version>
+			<version>2.0.9</version>
 		</dependency>
 
 		<!-- We use "provided" scope because we are exporting the contents of these 
@@ -74,6 +74,16 @@
 			<version>1.3</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.vChavezB</groupId>
+			<artifactId>aowln-sa</artifactId>
+			<version>0.0.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.14.3</version>
+		</dependency>
 
 	</dependencies>
 
@@ -81,9 +91,7 @@
 	</dependencyManagement>
 
 	<build>
-
 		<plugins>
-
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -157,7 +165,6 @@
 			<name>A temporary repository created by NetBeans for libraries and jars it could not identify. Please replace the dependencies in this repository with correct ones and delete this repository.</name>
 			<url>file:${project.basedir}/lib</url>
 		</repository>
-
 	</repositories>
 
 </project>

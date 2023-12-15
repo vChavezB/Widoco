@@ -41,6 +41,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+
 /**
  * Class made for parsing and manipulating LODE's html. This class contains most
  * of the TemplateGeneratorOLD class
@@ -136,6 +141,37 @@ public class LODEParser {
 		return ruleList;
 	}
 
+	public static String addImagesToEntities(String html, String rulesPath) {
+		Document doc = Jsoup.parse(html);
+
+		Elements entities = doc.setTextContent(".entity");
+		int ruleNumber = 1;
+
+		for (Element entity : entities) {
+			// Create the new image elements
+			Element headImage = createImageElement(rulesPath, ruleNumber, "head");
+			Element bodyImage = createImageElement(rulesPath, ruleNumber, "body");
+
+			// Append the images to the entity
+			entity.append(headImage.outerHtml());
+			entity.append(bodyImage.outerHtml());
+
+			ruleNumber++;
+		}
+
+		return doc.html();
+	}
+
+	private static Element createImageElement(String rulesPath, int ruleNumber, String type) {
+		String imagePath = String.format("%s/rule_%d-%s.png", rulesPath, ruleNumber, type);
+
+		Element img = new Element("img")
+				.attr("src", imagePath)
+				.attr("alt", type);
+
+		return img;
+	}
+
 	public String getSwrlrules() {
 		return swrlrules;
 	}
@@ -207,6 +243,7 @@ public class LODEParser {
 						swrlrules = (nodeToString(html.item(i)));
 						swrlrules = swrlrules.replace("<h2>SWRL rules</h2>",
 								"<h3 id=\"namedindividuals\" class=\"list\">SWRL rules</h3>");
+
 						break;
 				}
 			}
