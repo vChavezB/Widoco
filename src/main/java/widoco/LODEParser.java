@@ -149,7 +149,7 @@ private static Document convertToW3CDocument(org.jsoup.nodes.Document jsoupDoc) 
             Document w3cDoc = domImpl.createDocument(null, null, null);
 
             // Recursively copy nodes from jsoup document to w3c document
-            W3CElement root = convertToW3CElement(w3cDoc, jsoupDoc.children().first());
+            org.w3c.dom.Element root = convertToW3CElement(w3cDoc, jsoupDoc.children().first());
             w3cDoc.appendChild(root);
 
             return w3cDoc;
