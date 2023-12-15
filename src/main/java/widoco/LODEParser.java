@@ -141,6 +141,49 @@ public class LODEParser {
 	public String getRuleList() {
 		return ruleList;
 	}
+
+	public static String addImagesToEntities(String html, String rulesPath) {
+        org.jsoup.nodes.Document jsoupDoc = Jsoup.parse(html);
+        Document w3cDoc = convertToW3CDocument(jsoupDoc);
+
+        // Add images to entities
+        addImagesToEntities(w3cDoc, rulesPath);
+
+        // Convert the modified W3C document back to HTML
+        return convertW3CDocumentToHtml(w3cDoc);
+    }
+
+    private static void addImagesToEntities(Document w3cDoc, String rulesPath) {
+        org.w3c.dom.Element root = w3cDoc.getDocumentElement();
+        org.w3c.dom.NodeList entityNodes = root.getElementsByTagName("div");
+
+        int ruleNumber = 1;
+
+        for (int i = 0; i < entityNodes.getLength(); i++) {
+            org.w3c.dom.Node entityNode = entityNodes.item(i);
+            if (entityNode.getNodeType() == org.w3c.dom.Node.ELEMENT_NODE) {
+                org.w3c.dom.Element entityElement = (org.w3c.dom.Element) entityNode;
+
+                // Create the new image elements
+                org.w3c.dom.Element headImage = createImageElement(w3cDoc, rulesPath, ruleNumber, "head");
+                org.w3c.dom.Element bodyImage = createImageElement(w3cDoc, rulesPath, ruleNumber, "body");
+
+                // Append the images to the entity
+                entityElement.appendChild(headImage);
+                entityElement.appendChild(bodyImage);
+
+                ruleNumber++;
+            }
+        }
+    }
+
+    private static org.w3c.dom.Element createImageElement(Document w3cDoc, String rulesPath, int ruleNumber, String type) {
+        org.w3c.dom.Element img = w3cDoc.createElement("img");
+        img.setAttribute("src", String.format("%s/rule_%d-%s.png", rulesPath, ruleNumber, type));
+        img.setAttribute("alt", type);
+        return img;
+    }
+	
 private static Document convertToW3CDocument(org.jsoup.nodes.Document jsoupDoc) {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         try {
@@ -173,37 +216,15 @@ private static Document convertToW3CDocument(org.jsoup.nodes.Document jsoupDoc) 
 
         return w3cElement;
     }
+	/*
 	public static String addImagesToEntities(String html, String rulesPath) {
 		Document w3cDoc = convertToW3CDocument(Jsoup.parse(html));
 
 		Elements entities = doc.setTextContent(".entity");
 		int ruleNumber = 1;
 
-		for (Element entity : entities) {
-			// Create the new image elements
-			Element headImage = createImageElement(rulesPath, ruleNumber, "head");
-			Element bodyImage = createImageElement(rulesPath, ruleNumber, "body");
-
-			// Append the images to the entity
-			entity.append(headImage.outerHtml());
-			entity.append(bodyImage.outerHtml());
-
-			ruleNumber++;
-		}
-
-		return w3cDoc.html();
-	}
-
-	private static Element createImageElement(String rulesPath, int ruleNumber, String type) {
-		String imagePath = String.format("%s/rule_%d-%s.png", rulesPath, ruleNumber, type);
-
-		Element img = new Element("img")
-				.attr("src", imagePath)
-				.attr("alt", type);
-
-		return img;
-	}
-
+		for (Element entity : entitie
+*/
 	public String getSwrlrules() {
 		return swrlrules;
 	}
