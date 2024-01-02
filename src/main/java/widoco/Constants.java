@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import widoco.entities.Agent;
 import widoco.entities.Ontology;
+import widoco.ExternalPropertyParser;
 
 /**
  *
@@ -337,6 +338,7 @@ public class Constants {
 	public static final String LANG_CLASSES = "classes";
 	public static final String LANG_OBJ_PROP = "objProp";
 	public static final String LANG_DATA_PROP = "dataProp";
+	public static final String LANG_EXT_PROP = "extProp";
 	public static final String LANG_ANN_PROP = "annProp";
 	public static final String LANG_NAMED_INDIV = "namedIndiv";
 	public static final String LANG_TABLE_OF_CONTENTS = "tableOfContents";
@@ -1519,6 +1521,11 @@ public class Constants {
 				  "<sup class=\"type-ni\" title=\""
 				  + lang.getProperty(Constants.LANG_NAMED_INDIV) + "\">ni</sup>: "
 				  + lang.getProperty(Constants.LANG_NAMED_INDIV) + "\n"
+				: "")
+				+ (ExternalPropertyParser.hasExternalProps() ?
+				"<sup class=\"type-ep\" title=\""
+						+ lang.getProperty(Constants.LANG_EXT_PROP) + "\">ep</sup>: "
+						+ lang.getProperty(Constants.LANG_EXT_PROP) + " <br/>\n"
 				: "")
 				+ "</div>\n" + "</div>"
 				+ "\n";

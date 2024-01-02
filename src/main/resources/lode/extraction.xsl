@@ -1173,8 +1173,12 @@ http://www.oxygenxml.com/ns/doc/xsl ">
     <xsl:template name="get.individual.assertions">
         <xsl:variable name="assertions">
             <assertions>
+                <xsl:variable name="ns_rdfs" select="'http://www.w3.org/2000/01/rdf-schema#'"/>
+                <xsl:variable name="ns_dc" select="'http://purl.org/dc/elements/1.1/'"/>
                 <xsl:for-each select="element()">
-                    <xsl:if test="name() != 'rdf:type'">
+                    <xsl:if test="(name() != 'rdf:type')
+                                    and string(namespace-uri()) != $ns_rdfs
+                                    and string(namespace-uri()) != $ns_dc">
                         <xsl:variable name="currentURI" select="concat(namespace-uri(.),local-name(.))" as="xs:string"/>
                         <assertion rdf:about="{$currentURI}">
                             <xsl:choose>
@@ -1942,6 +1946,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
                 <sup title="{f:getDescriptionLabel('namedindividual')}" class="type-ni">ni</sup>
             </xsl:when>
             <xsl:when test="not(contains($iri, 'http://www.w3.org/2001/XMLSchema'))">
+                <xsl:message>Getting descriptor for <xsl:value-of select="$iri"/></xsl:message>
                 <sup title="{f:getDescriptionLabel('externalproperty')}" class="type-ep">ep</sup>
             </xsl:when>
         </xsl:choose>

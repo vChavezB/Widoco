@@ -36,33 +36,33 @@ import static org.junit.Assert.*;
 public class CreateDocInThreadTest {
     Configuration c;
     static String docUri = "myDoc";
-    
-    public CreateDocInThreadTest() { 
+
+    public CreateDocInThreadTest() {
         c = new Configuration();
         //set up where the files will be written. Otherwise, an error will be produced
         c.setDocumentationURI(docUri);
         c.setOverwriteAll(true);
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
-        
+
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
         deleteFiles(new File (docUri));
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
         deleteFiles(c.getTmpFile());
     }
-    
+
     private static void deleteFiles(File folder){
         String[]entries = folder.list();
         for(String s: entries){
@@ -76,7 +76,7 @@ public class CreateDocInThreadTest {
         }
         folder.delete();
     }
-    
+
     /**
      * Test ontology in TTL. BNE
      */
@@ -94,7 +94,7 @@ public class CreateDocInThreadTest {
             fail("Error while running test "+e.getMessage());
         }
     }
-    
+
     /**
      * Test an OWL ontology. coil.owl
      */
@@ -130,7 +130,7 @@ public class CreateDocInThreadTest {
             fail("Error while running test "+e.getMessage());
         }
     }
-    
+
     /**
      * Testing a medium  sized ontology: otalex.owl
      */
@@ -148,10 +148,10 @@ public class CreateDocInThreadTest {
             fail("Error while running test "+e.getMessage());
         }
     }
-    
-    
+
+
     /**
-     * Test if an ontology can be created from a URL. 
+     * Test if an ontology can be created from a URL.
      * Test ontology: PROV-O
      */
     @org.junit.Test
@@ -316,7 +316,7 @@ public class CreateDocInThreadTest {
             fail("Error while running the test: " +e.getMessage());
         }
     }
-//    
+//
     /**
      * This is a test to see if a big ontology works (several MB)
      * To be tested only on releases. IFC4_ADD1 ontology (that is why it is commented)
@@ -328,36 +328,36 @@ public class CreateDocInThreadTest {
 //            String pathToOnto = "test" + File.separator + "IFC4_ADD1.ttl";
 //            c.setFromFile(true);
 //            this.c.setOntologyPath(pathToOnto);
-            //read the model from file
+    //read the model from file
 //            WidocoUtils.loadModelToDocument(c);
 //            CreateResources.generateDocumentation(c.getDocumentationURI(), c, c.getTmpFile());
 //        }catch(Exception e){
 //            fail("Error while running test "+e.getMessage());
 //        }
 //    }
-    
-     /**
+
+    /**
      * An ontology written in a language that is NOT English: geolinkeddata.owl
-     * This ontology is an ontology network 
+     * This ontology is an ontology network
      * (needs internet connection to work)
-     * 
+     *
      * TEST COMMENTED OUT BECAUSE IMPORTING THE ONTOLOGIES IS SLOW
-     
-    @org.junit.Test
-    public void testOntologyInLanguage() {
-        System.out.println("Testing Ontology: geolinkeddata.owl");
-        try{
-            String pathToOnto = "test" + File.separator + "geolinkeddata.owl";
-            c.setFromFile(true);
-            this.c.setOntologyPath(pathToOnto);
-            //read the model from file
-            WidocoUtils.loadModelToDocument(c);
-            CreateResources.generateDocumentation(c.getDocumentationURI(), c, c.getTmpFile());
-        }catch(Exception e){
-            fail("Error while running test "+e.getMessage());
-        }
-    }*/
-    
-    
-    
+
+     @org.junit.Test
+     public void testOntologyInLanguage() {
+     System.out.println("Testing Ontology: geolinkeddata.owl");
+     try{
+     String pathToOnto = "test" + File.separator + "geolinkeddata.owl";
+     c.setFromFile(true);
+     this.c.setOntologyPath(pathToOnto);
+     //read the model from file
+     WidocoUtils.loadModelToDocument(c);
+     CreateResources.generateDocumentation(c.getDocumentationURI(), c, c.getTmpFile());
+     }catch(Exception e){
+     fail("Error while running test "+e.getMessage());
+     }
+     }*/
+
+
+
 }

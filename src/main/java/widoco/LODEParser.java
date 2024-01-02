@@ -41,6 +41,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import widoco.ExternalPropertyParser;
+
 /**
  * Class made for parsing and manipulating LODE's html. This class contains most
  * of the TemplateGeneratorOLD class
@@ -220,6 +222,7 @@ public class LODEParser {
 								"<h2>" + langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h2>",
 								"<h3 id=\"namedindividuals\" class=\"list\">"
 										+ langFile.getProperty(Constants.LANG_NAMED_INDIV) + "</h3>");
+						namedIndividuals = ExternalPropertyParser.parse(namedIndividuals, c.getMainOntology().getOWLAPIModel());
 						break;
 					/*missing: rules!*/
 					case "rules":
