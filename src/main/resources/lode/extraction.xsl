@@ -710,9 +710,17 @@ http://www.oxygenxml.com/ns/doc/xsl ">
                         </xsl:choose>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:variable name="camelCase" select="replace($localName,'([A-Z])',' $1')"/>
-                        <xsl:variable name="underscoreOrDash" select="replace($camelCase,'(_|-)',' ')"/>
-                        <xsl:value-of select="normalize-space(lower-case($underscoreOrDash))"/>
+                        <xsl:choose>
+                            <!-- Do not change label for qudt -->
+                            <xsl:when test="contains($iri, 'http://qudt.org/')">
+                                <xsl:value-of select="$localName"/>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:variable name="camelCase" select="replace($localName,'([A-Z])',' $1')"/>
+                                <xsl:variable name="underscoreOrDash" select="replace($camelCase,'(_|-)',' ')"/>
+                                <xsl:value-of select="normalize-space(lower-case($underscoreOrDash))"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:otherwise>
@@ -1946,7 +1954,6 @@ http://www.oxygenxml.com/ns/doc/xsl ">
                 <sup title="{f:getDescriptionLabel('namedindividual')}" class="type-ni">ni</sup>
             </xsl:when>
             <xsl:when test="not(contains($iri, 'http://www.w3.org/2001/XMLSchema'))">
-                <xsl:message>Getting descriptor for <xsl:value-of select="$iri"/></xsl:message>
                 <sup title="{f:getDescriptionLabel('externalproperty')}" class="type-ep">ep</sup>
             </xsl:when>
         </xsl:choose>

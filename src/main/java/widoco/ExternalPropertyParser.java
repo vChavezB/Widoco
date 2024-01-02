@@ -16,12 +16,43 @@ public class ExternalPropertyParser {
         OBJECT_PROPERTY,
         DATA_PROPERTY,
         NAMED_INDIVIDUAL,
-        EXTERNAL_PROPERTY
+        CLASS,
+        ANNOTATION_PROPERTY,
+        EXTERNAL_PROPERTY,
     }
 
-    private static boolean externalProps = false;
+    private static boolean uses_ep = false;
+    private static boolean uses_op = false;
+    private static boolean uses_ap = false;
+    private static boolean uses_dp = false;
+    private static boolean uses_ni = false;
+    private static boolean uses_c = false;
 
     private static final Logger logger = LoggerFactory.getLogger(ExternalPropertyParser.class);
+
+    public static boolean hasExternalProps(){
+        return uses_ep;
+    }
+
+    public static boolean hasClasses(){
+        return uses_c;
+    }
+
+    public static boolean hasObjProps(){
+        return uses_op;
+    }
+
+    public static boolean hasAnnotProps(){
+        return uses_ap;
+    }
+
+    public static boolean hasDataProps(){
+        return uses_dp;
+    }
+
+    public static boolean hasNamedIndiv(){
+        return uses_ni;
+    }
 
     /**
      * Parse html content with external property tags, i.e., the sup tag
@@ -52,20 +83,43 @@ public class ExternalPropertyParser {
                 class_name = "type-op";
                 text="op";
                 title = "object property";
+                if (!uses_op) {
+                    uses_op = true;
+                }
             } else if(type == PropertyType.DATA_PROPERTY) {
                 class_name = "type-dp";
                 text="dp";
                 title = "data property";
+                if (!uses_dp) {
+                    uses_dp = true;
+                }
             } else if (type == PropertyType.NAMED_INDIVIDUAL) {
                 class_name = "type-ni";
                 text="ni";
                 title = "named individual";
+                if (!uses_ni) {
+                    uses_ni = true;
+                }
+            } else if (type == PropertyType.CLASS) {
+                class_name = "type-c";
+                text="c";
+                title = "class";
+                if (!uses_c) {
+                    uses_c = true;
+                }
+            } else if (type == PropertyType.ANNOTATION_PROPERTY) {
+                class_name = "type-ap";
+                text="ap";
+                title = "annotation property";
+                if (!uses_ap) {
+                    uses_ap = true;
+                }
             } else {
                 class_name = "type-ep";
                 text ="ep";
                 title ="external property";
-                if (!externalProps) {
-                    externalProps = true;
+                if (!uses_ep) {
+                    uses_ep = true;
                 }
             }
             link.text(text);
@@ -75,35 +129,38 @@ public class ExternalPropertyParser {
         return document.body().html();
     }
 
-    public static boolean hasExternalProps(){
-        return externalProps;
-    }
-
     private static PropertyType getPropertyType(OWLOntology ontology, String propertyIRI) {
         IRI propertyIRIObject = IRI.create(propertyIRI);
-
-        // Check if it is an object property
         Set<OWLObjectProperty> objectProperties = ontology.getObjectPropertiesInSignature(Imports.INCLUDED);
         for (OWLObjectProperty objectProperty : objectProperties) {
             if (objectProperty.getIRI().equals(propertyIRIObject)) {
                 return PropertyType.OBJECT_PROPERTY;
             }
         }
-        // Check if it is a data property
         Set<OWLDataProperty> dataProperties = ontology.getDataPropertiesInSignature(Imports.INCLUDED);
         for (OWLDataProperty dataProperty : dataProperties) {
             if (dataProperty.getIRI().equals(propertyIRIObject)) {
                 return PropertyType.DATA_PROPERTY;
             }
         }
-
         Set<OWLNamedIndividual> individuals = ontology.getIndividualsInSignature(Imports.INCLUDED);
         for (OWLNamedIndividual individual : individuals) {
             if (individual.getIRI().equals(propertyIRIObject)) {
                 return PropertyType.NAMED_INDIVIDUAL;
             }
         }
-        // If not an object or data property, consider it as an external property
+        Set<OWLClass> classes = ontology.getClassesInSignature(Imports.INCLUDED);
+        for (OWLClass owl_class : classes) {
+            if (owl_class.getIRI().equals(propertyIRIObject)) {
+                return PropertyType.CLASS;
+            }
+        }
+        Set<OWLAnnotationProperty> annotationProperties = ontology.getAnnotationPropertiesInSignature(Imports.INCLUDED);
+        for (OWLAnnotationProperty annotationProperty : annotationProperties) {
+            if (annotationProperty.getIRI().equals(propertyIRIObject)) {
+                return PropertyType.ANNOTATION_PROPERTY;
+            }
+        }
         return PropertyType.EXTERNAL_PROPERTY;
     }
 

@@ -192,6 +192,7 @@ public class LODEParser {
 						classes = classes.replace("<h2>" + langFile.getProperty(Constants.LANG_CLASSES) + "</h2>",
 								"<h3 id=\"classes-headline\" class=\"list\">" + langFile.getProperty(Constants.LANG_CLASSES)
 										+ "</h3>");
+						classes = ExternalPropertyParser.parse(classes, c.getMainOntology().getOWLAPIModel());
 						break;
 					case "objectproperties":
 						propertyList = getTermList(html.item(i));
@@ -199,6 +200,7 @@ public class LODEParser {
 						properties = properties.replace("<h2>" + langFile.getProperty(Constants.LANG_OBJ_PROP) + "</h2>",
 								"<h3 id=\"properties\" class=\"list\">" + langFile.getProperty(Constants.LANG_OBJ_PROP)
 										+ "</h3>");
+						properties = ExternalPropertyParser.parse(properties, c.getMainOntology().getOWLAPIModel());
 						break;
 					case "dataproperties":
 						dataPropList = (getTermList(html.item(i)));
@@ -206,6 +208,7 @@ public class LODEParser {
 						dataProp = dataProp.replace("<h2>" + langFile.getProperty(Constants.LANG_DATA_PROP) + "</h2>",
 								"<h3 id=\"dataproperties-headline\" class=\"list\">"
 										+ langFile.getProperty(Constants.LANG_DATA_PROP) + "</h3>");
+						dataProp = ExternalPropertyParser.parse(dataProp, c.getMainOntology().getOWLAPIModel());
 						break;
 					case "annotationproperties":
 						annotationPropList = (getTermList(html.item(i)));
@@ -214,6 +217,7 @@ public class LODEParser {
 								"<h2>" + langFile.getProperty(Constants.LANG_ANN_PROP) + "</h2>",
 								"<h3 id=\"annotationproperties\" class=\"list\">"
 										+ langFile.getProperty(Constants.LANG_ANN_PROP) + "</h3>");
+						annotationProp = ExternalPropertyParser.parse(annotationProp, c.getMainOntology().getOWLAPIModel());
 						break;
 					case "namedindividuals":
 						namedIndividualList = (getTermList(html.item(i)));
@@ -248,6 +252,7 @@ public class LODEParser {
 						swrlrules = (nodeToString(html.item(i)));
 						swrlrules = swrlrules.replace("<h2>SWRL rules</h2>",
 								"<h3 id=\"swrlrules\" class=\"list\">SWRL rules</h3>");
+						swrlrules = ExternalPropertyParser.parse(swrlrules, c.getMainOntology().getOWLAPIModel());
 						break;
 				}
 			}
