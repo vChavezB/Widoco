@@ -2,13 +2,14 @@
   color-scheme: dark;
   --bg-status-box: rgb(0, 90, 156);
   --background-color: #3e3e42;
+  --htag-text: #83E9F0;
   --bg-backlink: #c1c1bd;
   --text-color: rgb(240 240 240);
   --shadow-color: rgb(240 240 240 / 50%);
   --accent-color: rgb(0 0 240 / 50%);
   --owl-bg-pre: rgb(15 15 15);
-  --link: white;	
-  --link-visited: gray;
+  --link: #DDC1F2;
+  --link-visited: #BD7DEE;
   --link-active: blue;
   --href-hover: gray;
   --bg-hlist: #67676E;
