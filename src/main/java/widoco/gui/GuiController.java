@@ -107,8 +107,8 @@ public final class GuiController {
 		boolean isFromFile = false, oops = false, rewriteAll = false, getOntoMetadata = true, useW3Cstyle = true,
 				includeImportedOntologies = false, htAccess = false, webVowl = false, errors = false, licensius = false,
 				generateOnlyCrossRef = false, includeNamedIndividuals = true, includeAnnotationProperties = false,
-				displaySerializations = true, displayDirectImportsOnly = false, excludeIntroduction = false, uniteSections = false,
-				placeHolderText = true, localImports=false;
+				displaySerializations = true, displayDirectImportsOnly = false, excludeIntroduction = false, excludeRef = false,
+				excludeAck = false, uniteSections = false, placeHolderText = true, localImports=false;
 		String confPath = "";
 		String code = null;// for tracking analytics.
 		String[] languages = null;
@@ -197,6 +197,12 @@ public final class GuiController {
 			case "-excludeIntroduction":
 				excludeIntroduction = true;
 				break;
+			case "-excludeReferences":
+				excludeRef = true;
+				break;
+			case "-excludeAck":
+				excludeAck = true;
+				break;
 			case "-uniteSections":
 				uniteSections = true;
 				break;
@@ -260,6 +266,12 @@ public final class GuiController {
 			this.config.setIncludeDescription(false);
 			this.config.setIncludeReferences(false);
 			this.config.setIncludeAbstract(false);
+		}
+		if (excludeRef){
+			this.config.setIncludeReferences(false);
+		}
+		if (excludeAck){
+			this.config.setIncludeAcknowledge(false);
 		}
 		if (code != null) {
 			this.config.setGoogleAnalyticsCode(code);
