@@ -137,7 +137,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
         <script>
             $(document).ready(
             function () {
-            jQuery(".markdown").each(function(el){jQuery(this).after(marked(jQuery(this).text())).remove()});
+            jQuery(".markdown").each(function(el){jQuery(this).after(marked.parse(jQuery(this).text())).remove()});
             var list = $('a[name="<xsl:value-of select="$ontology-url"/>"]');
             if (list.size() != 0) {
             var element = list.first();
@@ -574,7 +574,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
         <xsl:variable name="label" select="f:getLabel(.)" as="xs:string"/>
         <xsl:choose>
             <xsl:when test="$anchor = ''">
-                <!-- Change to make the external links open in a new window 
+                <!-- Change to make the external links open in a new window
                 instead of being dotted
                 <span class="dotted" title="{.}">
                     <xsl:value-of select="$label" />
@@ -631,7 +631,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
 
     <!-- <xsl:function name="f:getLabel" as="xs:string">
         <xsl:param name="iri" as="xs:string" />
-        
+
         <xsl:variable name="node" select="$root//rdf:RDF/element()[(@*:about = $iri or @*:ID = $iri) and exists(rdfs:label)][1]" as="element()*" />
         <xsl:choose>
             <xsl:when test="exists($node/rdfs:label)">
@@ -688,7 +688,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
                     <xsl:variable
                             name="current-index"
                             select="if (contains($iri,'#'))
-                                    then f:string-first-index-of($iri,'#') 
+                                    then f:string-first-index-of($iri,'#')
                                     else f:string-last-index-of(replace($iri,'://','---'),'/')"
                             as="xs:integer?"/>
                     <xsl:if test="exists($current-index) and string-length($iri) != $current-index">
@@ -712,7 +712,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
                     <xsl:otherwise>
                         <xsl:variable name="camelCase" select="replace($localName,'([A-Z])',' $1')"/>
                         <xsl:variable name="underscoreOrDash" select="replace($camelCase,'(_|-)',' ')"/>
-                        <xsl:value-of select="normalize-space(lower-case($underscoreOrDash))"/>
+                        <xsl:value-of select="normalize-space($underscoreOrDash)"/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:otherwise>
@@ -1322,7 +1322,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
     <xsl:template name="get.class.indomain">
         <xsl:variable name="about" select="@*:about|@*:ID" as="xs:string"/>
         <xsl:variable name="properties" as="attribute()*"
-                      select="/rdf:RDF/(owl:ObjectProperty|rdf:Property|owl:DatatypeProperty|owl:AnnotationProperty)[some $res in (rdfs:domain|schema:domainIncludes)/(@*:resource|(owl:Class|rdfs:Class)/@*:about) satisfies $res = $about]/(@*:about|@*:ID)"/>
+        select="/rdf:RDF/(owl:ObjectProperty|rdf:Property|owl:DatatypeProperty|owl:AnnotationProperty)[some $res in (rdfs:domain|schema:domainIncludes)/(@*:resource|(owl:Class|rdfs:Class|owl:Class/owl:unionOf/rdf:Description)/@*:about) satisfies $res = $about]/(@*:about|@*:ID)"/>
         <xsl:if test="exists($properties)">
             <dt>
                 <xsl:value-of select="f:getDescriptionLabel('isindomainof')"/>
@@ -1345,7 +1345,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
     <xsl:template name="get.class.inrange">
         <xsl:variable name="about" select="(@*:about|@*:ID)" as="xs:string"/>
         <xsl:variable name="properties" as="attribute()*"
-                      select="/rdf:RDF/(owl:ObjectProperty|rdf:Property|owl:DatatypeProperty|owl:AnnotationProperty)[some $res in (rdfs:range|schema:rangeIncludes)/(@*:resource|(owl:Class|rdfs:Class)/@*:about) satisfies $res = $about]/(@*:about|@*:ID)"/>
+        select="/rdf:RDF/(owl:ObjectProperty|rdf:Property|owl:DatatypeProperty|owl:AnnotationProperty)[some $res in (rdfs:range|schema:rangeIncludes)/(@*:resource|(owl:Class|rdfs:Class|owl:Class/owl:unionOf/rdf:Description)/@*:about) satisfies $res = $about]/(@*:about|@*:ID)"/>
         <xsl:if test="exists($properties)">
             <dt>
                 <xsl:value-of select="f:getDescriptionLabel('isinrangeof')"/>
@@ -2016,7 +2016,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
 
     <!--
         input: un elemento tipicamente contenente solo testo
-        output: un booleano che risponde se quell'elemento è quello giusto per la lingua considerata        
+        output: un booleano che risponde se quell'elemento è quello giusto per la lingua considerata
     -->
     <xsl:function name="f:isInLanguage" as="xs:boolean">
         <xsl:param name="el" as="element()"/>
@@ -2024,7 +2024,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
         <xsl:variable name="isDefLang" select="$el/@xml:lang = $def-lang" as="xs:boolean"/>
 
         <xsl:choose>
-            <!-- 
+            <!--
                 Ritorno false se:
                 - c'è qualche elemento prima di me del linguaggio giusto OR
                 - io non sono del linguaggio giusto AND
@@ -2094,7 +2094,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
     <xsl:function name="f:isInDomain" as="xs:boolean">
         <xsl:param name="el" as="element()"/>
         <xsl:value-of
-                select="exists($rdf/(owl:ObjectProperty|owl:DatatypeProperty|owl:AnnotationProperty)[some $res in (rdfs:domain|schema:domainIncludes)/(@*:resource|(owl:Class|rdfs:Class)/@*:about) satisfies $res = $el/(@*:about|@*:ID)])"/>
+        select="exists($rdf/(owl:ObjectProperty|owl:DatatypeProperty|owl:AnnotationProperty)[some $res in (rdfs:domain|schema:domainIncludes)/(@*:resource|(owl:Class|rdfs:Class|owl:Class/owl:unionOf/rdf:Description)/@*:about) satisfies $res = $el/(@*:about|@*:ID)])"/>
     </xsl:function>
 
     <xsl:function name="f:hasSubproperties" as="xs:boolean">
@@ -2102,7 +2102,7 @@ http://www.oxygenxml.com/ns/doc/xsl ">
         <xsl:variable name="type" select="if ($el/self::owl:AnnotationProperty) then 'annotation' else 'property'"
                       as="xs:string"/>
         <xsl:value-of
-                select="exists($rdf/(if ($type = 'property') then owl:DatatypeProperty | owl:ObjectProperty else owl:AnnotationProperty)[some $res in rdfs:subPropertyOf/(@*:resource|(owl:Class|rdfs:Class)/@*:about) satisfies $res = $el/(@*:about|@*:ID)])"/>
+        select="exists($rdf/(if ($type = 'property') then owl:DatatypeProperty | owl:ObjectProperty else owl:AnnotationProperty)[some $res in rdfs:subPropertyOf/(@*:resource|(owl:Class|rdfs:Class|owl:Class/owl:unionOf/rdf:Description)/@*:about) satisfies $res = $el/(@*:about|@*:ID)])"/>
     </xsl:function>
 
     <xsl:function name="f:getType" as="xs:string?">

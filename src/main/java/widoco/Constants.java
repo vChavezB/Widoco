@@ -75,6 +75,7 @@ public class Constants {
 	public static final String NS_VOAF = "http://purl.org/vocommons/voaf#";
 	public static final String NS_WDRS = "http://www.w3.org/2007/05/powder-s#";
 	public static final String NS_WIDOCO = "https://w3id.org/widoco/vocab#";
+	public static final String NS_DOAP = "http://usefulinc.com/ns/doap#";
 
 	public static final String PROP_RDFS_LABEL = NS_RDFS + "label";
 	public static final String PROP_RDFS_COMMENT = NS_RDFS + "comment";
@@ -125,6 +126,8 @@ public class Constants {
 	public static final String PROP_SCHEMA_LOGO_HTTPS = NS_SCHEMA_HTTPS + "logo";
 	public static final String PROP_SCHEMA_STATUS_HTTP = NS_SCHEMA_HTTP + "creativeWorkStatus";
 	public static final String PROP_SCHEMA_STATUS_HTTPS = NS_SCHEMA_HTTPS + "creativeWorkStatus";
+	public static final String PROP_SCHEMA_CODE_REPO_HTTP = NS_SCHEMA_HTTP + "codeRepository";
+	public static final String PROP_SCHEMA_CODE_REPO_HTTPS = NS_SCHEMA_HTTPS + "codeRepository";
 
 	public static final String PROP_OWL_VERSION_INFO = NS_OWL + "versionInfo";
 	public static final String PROP_OWL_PRIOR_VERSION = NS_OWL + "priorVersion";
@@ -155,6 +158,8 @@ public class Constants {
 	public static final String PROP_DCTERMS_BIBLIOGRAPHIC_CIT = NS_DCTERMS + "bibliographicCitation";
 	public static final String PROP_DCTERMS_HAS_VERSION = NS_DCTERMS + "hasVersion";
 	public static final String PROP_DCTERMS_SOURCE = NS_DCTERMS + "source";
+
+	public static final String PROP_DOAP_REPO = NS_DOAP + "repository";
 
 	public static final String PROP_BIBO_DOI = NS_BIBO + "doi";
 	public static final String PROP_BIBO_STATUS = NS_BIBO + "status";
@@ -273,6 +278,12 @@ public class Constants {
 	public static final String PF_SERIALIZATION_JSON = "JSONLDSerialization";
 	public static final String PF_SERIALIZATION_RDF = "RDFXMLSerialization";
 	public static final String PF_SERIALIZATION_TTL = "TurtleSerialization";
+	public static final String PF_ABSTRACT_PATH = "pathToAbstract";
+	public static final String PF_INTRO_PATH = "pathToIntro";
+	public static final String PF_DESCRIPTION_PATH = "pathToDescription";
+	public static final String PF_OVERVIEW_PATH = "pathToOverview";
+	public static final String PF_REFERENCES_PATH = "pathToReferences";
+	public static final String PF_REFERENCES_CODE_REPO = "codeRepository";
 
 	/*OWL_API RDF Serializations*/
 	public static final String RDF_XML = "RDF/XML";
@@ -349,6 +360,7 @@ public class Constants {
 	public static final String LANG_SEE_ALSO = "seeAlso";
 	public static final String LANG_FUNDER = "funder";
 	public static final String LANG_FUNDING = "funding";
+	public static final String LANG_CODE_REPO = "codeRepository";
 
 	// labels for the changelog
 	public static final String LANG_CHANGELOG_HEAD = "changelogHead";
@@ -409,7 +421,7 @@ public class Constants {
 "    -uniteSections: Write all HTML sections into a single HTML document. \n" +
 "    -noPlaceHolderText: Do not add any placeholder text (this will remove intro, abstract (if empty) and " +
 				"description sections)." +
-"    --help: Shows this message and exit.\n";  
+"    --help: Shows this message and exit.\n";
 
 	/**
 	 * Head section of the HTML document.
@@ -432,7 +444,7 @@ public class Constants {
 
 	/**
 	 * Text representing the div of the status.
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -568,7 +580,7 @@ public class Constants {
 		while (it.hasNext()) {
 			Ontology currentOnto = it.next();
 			String currentOntoName = currentOnto.getName();
-			if (currentOntoName == null || "".equals(currentOntoName)) {
+			if (currentOntoName == null || currentOntoName.isEmpty()) {
 				currentOntoName = "Onto" + i;
 				i++;
 			}
@@ -634,7 +646,7 @@ public class Constants {
 	 * Serialization of the JSON LD for the ontology specification. Given that I
 	 * have faced some serialization issues, I serialize it by hand, using basic
 	 * properties.
-	 * 
+	 *
 	 * @param c
 	 * @return
 	 */
@@ -674,6 +686,9 @@ public class Constants {
 		// license (optional)
 		if (o.getLicense() != null && o.getLicense().getUrl() != null && !"".equals(o.getLicense().getUrl())) {
 			metadata += ", \"license\":\"" + o.getLicense().getUrl() + "\"";
+		}
+		if(o.getCodeRepository()!=null && !o.getCodeRepository().isEmpty()){
+			metadata += ", \"codeRepository\":\"" + o.getCodeRepository() + "\"";
 		}
 		// authors (optional)
 		ArrayList<Agent> a = o.getCreators();
@@ -889,7 +904,7 @@ public class Constants {
          * @param abs abstract section
          * @param intro introduction section
          * @param overview overview section
-         * @param des description section 
+         * @param des description section
          * @param references references section
          * @param changelog changelog section
          * @param crossRef cross reference section
@@ -921,7 +936,7 @@ public class Constants {
 		document += "<script src=\"" + resourcesFolderName + "/jquery.js\"></script> \n" + "<script src=\""
 				+ resourcesFolderName + "/marked.min.js\"></script> \n" + "    "
                         + "<script> \n" + "function loadHash() {\n"
-				+ "  jQuery(\".markdown\").each(function(el){jQuery(this).after(marked(jQuery(this).text())).remove()});\n"
+				+ "  jQuery(\".markdown\").each(function(el){jQuery(this).after(marked.parse(jQuery(this).text())).remove()});\n"
 				+ "	var hash = location.hash;\n" + "	if($(hash).offset()!=null){\n"
 				+ "	  $('html, body').animate({scrollTop: $(hash).offset().top}, 0);\n" + "}\n" + "	loadTOC();\n"
 				+ "}\n" + "function loadTOC(){\n" + "	//process toc dynamically\n" + "	  var t='<h2>"
@@ -933,8 +948,8 @@ public class Constants {
 				+ "				t+='<ul>';\n" + "			}\n" + "			j++;\n"
 				+ "			t+= '<li>'+(i-1)+'.'+j+'. '+'<a href=#'+ jQuery(this).attr('id')+'>'+ jQuery(this).ignore(\"span\").text()+'</a></li>';\n"
 				+ "		}\n" + "	  });\n" + "	  t+='</ul>';\n" + "	  $(\"#toc\").html(t); \n" + "}\n"
-                                + "$(function(){\n" 
-                                + "    loadHash();\n" 
+                                + "$(function(){\n"
+                                + "    loadHash();\n"
                                 + "});"
 				+ " $.fn.ignore = function(sel){\n" + "        return this.clone().find(sel||\">*\").remove().end();\n"
 				+ " };" + " \n";
@@ -1085,12 +1100,19 @@ public class Constants {
 					+ "<a href=\""+c.getMainOntology().getBackwardsCompatibleWith()+"\">"
 					+ c.getMainOntology().getBackwardsCompatibleWith() +"</a>" + "</dd>\n";
 		}
-                if (!"".equals(c.getMainOntology().getIncompatibleWith())
+		if (!"".equals(c.getMainOntology().getIncompatibleWith())
 				&& c.getMainOntology().getIncompatibleWith() != null) {
 			// doi is common for all languages
 			head += "<dt>" + l.getProperty(LANG_INCOMPATIBLE) + ":</dt>\n<dd>"
 					+ "<a href=\""+c.getMainOntology().getIncompatibleWith()+"\">"
 					+ c.getMainOntology().getIncompatibleWith() +"</a>" + "</dd>\n";
+		}
+		if (!"".equals(c.getMainOntology().getCodeRepository())
+				&& c.getMainOntology().getCodeRepository() != null) {
+			// doi is common for all languages
+			head += "<dt>" + l.getProperty(LANG_CODE_REPO) + ":</dt>\n<dd>"
+					+ "<a href=\""+c.getMainOntology().getCodeRepository()+"\">"
+					+ c.getMainOntology().getCodeRepository() +"</a>" + "</dd>\n";
 		}
 
 		// end definition list
@@ -1200,7 +1222,7 @@ public class Constants {
 			provURI = "..\\index-" + c.getCurrentLanguage() + ".html";
 		}
 		String provrdf = "@prefix prov: <http://www.w3.org/ns/prov#> .\n"
-				+ "@prefix dc: <http://purl.org/dc/terms/> .\n" 
+				+ "@prefix dc: <http://purl.org/dc/terms/> .\n"
                                 + "@prefix foaf: <http://xmlns.com/foaf/0.1/> .\n"
                                 + "@prefix : <> .\n";
 		provrdf += "<" + provURI + "> a prov:Entity;\n";
@@ -1303,8 +1325,8 @@ public class Constants {
 				+ "<dt><span class=\"label label-minor\">Minor</span></dt> <dd>It is not really a problem, but by correcting it we will make the ontology nicer.</dd>\n"
 				+ "</dl>" + evaluationContent +
 				// references
-				"<p>References:</p>\n" + 
-				"    <ul>\n" + 
+				"<p>References:</p>\n" +
+				"    <ul>\n" +
                 "<li>\n"+
 				"    [1] Aguado-De Cea, G., Montiel-Ponsoda, E., Poveda-Villalón, M., and Giraldo-Pasmin, O.X. (2015). Lexicalizing Ontologies: The issues behind the labels. In Multimodal communication in the 21st century: Professional and academic challenges. 33rd Conference of the Spanish Association of Applied Linguistics (AESLA), XXXIII AESLA." +
                 "</li>\n"+
@@ -1360,7 +1382,7 @@ public class Constants {
 	/**
 	 * Method that writes an htaccess file according to the W3C best practices. Note
 	 * that hash is different from slash
-	 * 
+	 *
 	 * @param c Configuration parameter with the language parameters
 	 * @return a String with the htaccess file
 	 */
@@ -1477,7 +1499,7 @@ public class Constants {
 
 	/**
 	 * Text for the 406 page
-	 * 
+	 *
 	 * @param c
 	 * @param lang
 	 * @return the content of the 406 page
