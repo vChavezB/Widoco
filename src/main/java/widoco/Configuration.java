@@ -69,6 +69,7 @@ public class Configuration {
 	private boolean includeOverview;
 	private boolean includeDescription;
 	private boolean includeReferences;
+	private boolean includeAcknowledge;
 	private boolean includeCrossReferenceSection;// needed for skeleton
 	private boolean includeAnnotationProperties;
 	private boolean includeNamedIndividuals;
@@ -163,6 +164,7 @@ public class Configuration {
 		includeOverview = true;
 		includeDescription = true;
 		includeReferences = true;
+		includeAcknowledge = true;
 		includeCrossReferenceSection = true;
 		includeAnnotationProperties = false;
 		includeNamedIndividuals = true;
@@ -1121,6 +1123,10 @@ public class Configuration {
 		return includeReferences;
 	}
 
+	public boolean isIncludeAcknowledge() {
+		return includeAcknowledge;
+	}
+
 	public boolean isIncludeCrossReferenceSection() {
 		return includeCrossReferenceSection;
 	}
@@ -1163,6 +1169,10 @@ public class Configuration {
 
 	public void setIncludeReferences(boolean includeReferences) {
 		this.includeReferences = includeReferences;
+	}
+
+	public void setIncludeAcknowledge(boolean includeAcknowledge) {
+		this.includeAcknowledge = includeAcknowledge;
 	}
 
 	public void setIncludeCrossReferenceSection(boolean includeCrossReferenceSection) {

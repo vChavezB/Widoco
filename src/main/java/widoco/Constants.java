@@ -867,7 +867,8 @@ public class Constants {
 				&& !"".equals(c.getMainOntology().getPreviousVersion())) {
 			document += "     <div id=\"changelog\"></div>\n";
 		}
-		document += getAcknowledgementsSection(c, lang) + "\n";
+		if (c.isIncludeAcknowledge())
+			document += getAcknowledgementsSection(c, lang) + "\n";
 		document += "</div>\n"; // closing .container
 		document += "</body>\n</html>"; // end of page
 		// document done
@@ -975,7 +976,8 @@ public class Constants {
 				&& !"".equals(c.getMainOntology().getPreviousVersion())) {
 			document += "   \n\n<!--CHANGELOG SECTION-->\n   <div id=\"changelog\">"+changelog+"</div>\n";
 		}
-		document += getAcknowledgementsSection(c, lang) + "\n";
+		if (c.isIncludeAcknowledge())
+			document += getAcknowledgementsSection(c, lang) + "\n";
 		document += "</div>\n"; // closing .container
 		document += "</body>\n</html>"; // end of page
 		return document;
