@@ -109,7 +109,7 @@ public final class GuiController {
 				generateOnlyCrossRef = false, includeNamedIndividuals = true, includeAnnotationProperties = false,
 				displaySerializations = true, displayDirectImportsOnly = false, excludeIntroduction = false, excludeProvenance = false,
 			    uniteSections = false, placeHolderText = true, localImports=false,
-				excludeRef = false, excludeAck = false,;
+				excludeRef = false, excludeAck = false;
 		String confPath = "";
 		String code = null;// for tracking analytics.
 		String[] languages = null;
