@@ -257,8 +257,8 @@ public class ExternalEntitiesTest {
     static void testIndividual(Document doc, String iri,String expectedClassIRI,String expectedType) {
         String entityType = getIndividualClassType(doc,iri);
         String classIRI = getIndividualClassIRI(doc,iri);
-        assert(entityType.equals(expectedType));
-        assert(classIRI.equals(expectedClassIRI));
+        assertEquals(expectedType, entityType);
+        assertEquals(expectedClassIRI, classIRI);
     }
 
 
@@ -271,10 +271,10 @@ public class ExternalEntitiesTest {
      * @param expectedObjType
      */
     static void testFact(Fact fact,String expectedPredicateIRI, String expectedPredicateType, String expectedObjectIRI, String expectedObjType) {
-        assert(fact.getPredicateIRI().equals(expectedPredicateIRI));
-        assert(fact.getPredicateType().equals(expectedPredicateType));
-        assert(fact.getObjectIRI().equals(expectedObjectIRI));
-        assert(fact.getObjectType().equals(expectedObjType));
+        assertEquals(expectedPredicateIRI, fact.getPredicateIRI());
+        assertEquals(expectedPredicateType, fact.getPredicateType());
+        assertEquals(expectedObjectIRI, fact.getObjectIRI());
+        assertEquals(expectedObjType, fact.getObjectType());
     }
 
     // New helper to find a fact by predicate IRI to avoid relying on ordering
@@ -308,21 +308,21 @@ public class ExternalEntitiesTest {
             // Look for superclass of ExtProject
             // i.e., http://xmlns.com/foaf/0.1/Project should be recognized as type-c
             String extProjectSuperClassType = getSuperClassType(crossRefDoc,ONT_NS+"ExtProject");
-            assert(extProjectSuperClassType!=null);
-            assert(extProjectSuperClassType.equals("type-c"));
+            assertNotNull(extProjectSuperClassType);
+            assertEquals("type-c", extProjectSuperClassType);
             testIndividual(crossRefDoc,ONT_NS+"PersonA","http://www.w3.org/2000/10/swap/pim/contact#Person","type-c");
             testIndividual(crossRefDoc,ONT_NS+"PersonB",ONT_NS+"LocalPerson","type-c");
             testIndividual(crossRefDoc,ONT_NS+"Project1",ONT_NS+"ExtProject","type-c");
 
             ArrayList<Fact> personAFacts = getIndividualFacts(crossRefDoc, ONT_NS + "PersonA");
-            assert(personAFacts.size() == 1);
+            assertEquals(1, personAFacts.size());
             Fact aFact = findFactByPredicate(personAFacts, "http://my-external-ont.com/ext/Annotation");
             assertNotNull(aFact);
             testFact(aFact,"http://my-external-ont.com/ext/Annotation","type-ap",
                                             "literal","\"external annotation\"@en");
 
             ArrayList<Fact> personBFacts = getIndividualFacts(crossRefDoc, ONT_NS + "PersonB");
-            assert(personBFacts.size() == 2);
+            assertEquals(2, personBFacts.size());
             Fact knowsFact = findFactByPredicate(personBFacts, "http://xmlns.com/foaf/0.1/knows");
             assertNotNull(knowsFact);
             testFact(knowsFact,"http://xmlns.com/foaf/0.1/knows","type-op",
@@ -333,7 +333,7 @@ public class ExternalEntitiesTest {
                     "literal","\"30\"^^integer");
 
             ArrayList<Fact> project1Facts = getIndividualFacts(crossRefDoc, ONT_NS + "Project1");
-            assert(project1Facts.size() == 2);
+            assertEquals(2, project1Facts.size());
             Fact fundedFact = findFactByPredicate(project1Facts, "http://xmlns.com/foaf/0.1/fundedBy");
             assertNotNull(fundedFact);
             testFact(fundedFact,"http://xmlns.com/foaf/0.1/fundedBy","type-op",
