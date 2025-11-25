@@ -420,9 +420,8 @@ public class Configuration {
 			this.setReferencesPath(propertyFile.getProperty(Constants.PF_REFERENCES_PATH, null));
 			mainOntologyMetadata.setCodeRepository(propertyFile.getProperty(Constants.PF_REFERENCES_CODE_REPO, ""));
 		} catch (IOException ex) {
-			// Only a warning, as we can continue safely without a property file.
-			logger.error("Error reading config.properties", ex);
-			logger.warn("Error while reading configuration properties from [" + path + "]: " + ex.getMessage());
+			// Error reading config.properties - log for debugging and re-throw
+			logger.error("Error reading config.properties from [" + path + "]", ex);
 			throw ex;
 		}
 	}
