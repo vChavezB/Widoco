@@ -139,7 +139,7 @@ public class CreateResources {
 		
 		// Debug logging for crossref file
 		try {
-			File crossRefCandidate = new File(c.getDocumentationURI() + "/sections/crossref-en.html");
+			File crossRefCandidate = new File(c.getDocumentationURI() + File.separator + "sections" + File.separator + "crossref-en.html");
 			logger.info("Crossref path: {} exists={} size={}", 
 				crossRefCandidate.getAbsolutePath(), 
 				crossRefCandidate.exists(), 
@@ -148,7 +148,7 @@ public class CreateResources {
 			if (crossRefCandidate.exists() && crossRefCandidate.length() > 0) {
 				try {
 					byte[] bytes = java.nio.file.Files.readAllBytes(crossRefCandidate.toPath());
-					String content = new String(bytes, "UTF-8");
+					String content = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
 					int excerptLen = Math.min(2048, content.length());
 					String excerpt = content.substring(0, excerptLen);
 					String excerptEscaped = excerpt.replace("\n", "\\n").replace("\r", "\\r");
