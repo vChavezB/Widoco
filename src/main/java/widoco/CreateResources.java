@@ -51,6 +51,7 @@ public class CreateResources {
 	private static final Logger logger = LoggerFactory.getLogger(CreateResources.class);
 
 	public static void generateDocumentation(String outFolder, Configuration c, File lodeResources) throws Exception {
+		logger.info("Generate documentation - documentationURI='{}', tmp='{}'", c.getDocumentationURI(), c.getTmpFile());
 		String lodeContent;
 		String folderOut = outFolder;
 		Properties languageFile = new Properties();
@@ -134,6 +135,30 @@ public class CreateResources {
                     }else{
                         createIndexDocument(folderOut, c, lode, languageFile);
                     }
+		}
+		
+		// Debug logging for crossref file
+		try {
+			File crossRefCandidate = new File(c.getDocumentationURI() + File.separator + "sections" + File.separator + "crossref-en.html");
+			logger.info("Crossref path: {} exists={} size={}", 
+				crossRefCandidate.getAbsolutePath(), 
+				crossRefCandidate.exists(), 
+				crossRefCandidate.exists() ? crossRefCandidate.length() : 0);
+			
+			if (crossRefCandidate.exists() && crossRefCandidate.length() > 0) {
+				try {
+					byte[] bytes = java.nio.file.Files.readAllBytes(crossRefCandidate.toPath());
+					String content = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
+					int excerptLen = Math.min(2048, content.length());
+					String excerpt = content.substring(0, excerptLen);
+					String excerptEscaped = excerpt.replace("\n", "\\n").replace("\r", "\\r");
+					logger.info("crossref-en.html firstExcerpt:\n{}", excerptEscaped);
+				} catch (Exception e) {
+					logger.warn("Could not read crossref file for preview: {}", e.getMessage());
+				}
+			}
+		} catch (Exception e) {
+			logger.warn("Error while checking crossref file: {}", e.getMessage());
 		}
 	}
 

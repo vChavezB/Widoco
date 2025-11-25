@@ -278,6 +278,22 @@ public class ExternalEntitiesTest {
 //            WidocoUtils.loadModelToDocument(c);
 //            CreateResources.generateDocumentation(c.getDocumentationURI(), c, c.getTmpFile());
 //            File crossRefFile = new File(c.getDocumentationURI()+"/sections/crossref-en.html");
+//            
+//            // Test-side debug logging for crossref file
+//            System.out.println("TEST DEBUG - Crossref file path: " + crossRefFile.getAbsolutePath());
+//            System.out.println("TEST DEBUG - Crossref file exists: " + crossRefFile.exists());
+//            System.out.println("TEST DEBUG - Crossref file length: " + (crossRefFile.exists() ? crossRefFile.length() : 0));
+//            if (crossRefFile.exists() && crossRefFile.length() > 0) {
+//                try {
+//                    String content = new String(java.nio.file.Files.readAllBytes(crossRefFile.toPath()), "UTF-8");
+//                    int excerptLen = Math.min(2000, content.length());
+//                    String excerpt = content.substring(0, excerptLen);
+//                    System.out.println("TEST DEBUG - Crossref first ~2000 chars:\n" + excerpt);
+//                } catch (Exception debugEx) {
+//                    System.out.println("TEST DEBUG - Could not read crossref file: " + debugEx.getMessage());
+//                }
+//            }
+//            
 //            Document crossRefDoc = Jsoup.parse(crossRefFile, "UTF-8");
 //            // Look for superclass of ExtProject
 //            // i.e., http://xmlns.com/foaf/0.1/Project should be recognized as type-c
