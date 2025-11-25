@@ -46,6 +46,7 @@ import licensius.GetLicense;
 public class Configuration {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
+	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Configuration.class);
 
 	private Ontology mainOntologyMetadata;
 	/**
@@ -233,10 +234,16 @@ public class Configuration {
 	}
 
 	private void loadPropertyFile(String path) throws IOException {
+		File cfgF = new File(path);
+		LOG.info("Attempting to load config from path: {}", path);
+		LOG.info("Config file exists: {}", cfgF.exists());
 		try {
 			initializeOntology();
 			// this forces the property file to be in UTF 8 instead of the ISO
 			propertyFile.load(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+			// Log sample properties after loading
+			LOG.info("Loaded config properties (sample): documentationURI='{}', overwriteAll='{}'", 
+				propertyFile.getProperty("documentationURI"), propertyFile.getProperty("overwriteAll"));
 			// We try to load from the configuration file. If it fails, then we should try
 			// to load from the ontology. Then, if it fails, we should ask the user.
 			abstractSection = propertyFile.getProperty(Constants.PF_ABSTRACT_SECTION_CONTENT);
@@ -415,6 +422,7 @@ public class Configuration {
 			mainOntologyMetadata.setCodeRepository(propertyFile.getProperty(Constants.PF_REFERENCES_CODE_REPO, ""));
 		} catch (IOException ex) {
 			// Only a warning, as we can continue safely without a property file.
+			LOG.error("Error reading config.properties", ex);
 			logger.warn("Error while reading configuration properties from [" + path + "]: " + ex.getMessage());
 			throw ex;
 		}

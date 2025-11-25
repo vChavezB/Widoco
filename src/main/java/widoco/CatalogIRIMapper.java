@@ -157,6 +157,12 @@ public class CatalogIRIMapper implements OWLOntologyIRIMapper {
                         )
                 )
             );
+        
+        // Log all catalog mappings after processing
+        ontologyIRI2AltIRImap.forEach((key, value) ->
+            logger.debug("Catalog mapping: {} -> {}", key, value)
+        );
+        logger.info("CatalogIRIMapper loaded {} mappings", ontologyIRI2AltIRImap.size());
     }
 
     private OWLOntology loadOntologyFromOntologyDocument(OWLOntologyDocumentSource documentSource) {
