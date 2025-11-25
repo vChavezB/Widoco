@@ -49,10 +49,9 @@ import widoco.entities.Ontology;
 public class CreateResources {
 
 	private static final Logger logger = LoggerFactory.getLogger(CreateResources.class);
-	private static final Logger LOG = logger;
 
 	public static void generateDocumentation(String outFolder, Configuration c, File lodeResources) throws Exception {
-		LOG.info("Generate documentation - documentationURI='{}', tmp='{}'", c.getDocumentationURI(), c.getTmpFile());
+		logger.info("Generate documentation - documentationURI='{}', tmp='{}'", c.getDocumentationURI(), c.getTmpFile());
 		String lodeContent;
 		String folderOut = outFolder;
 		Properties languageFile = new Properties();
@@ -141,7 +140,7 @@ public class CreateResources {
 		// Debug logging for crossref file
 		try {
 			File crossRefCandidate = new File(c.getDocumentationURI() + "/sections/crossref-en.html");
-			LOG.info("Crossref path: {} exists={} size={}", 
+			logger.info("Crossref path: {} exists={} size={}", 
 				crossRefCandidate.getAbsolutePath(), 
 				crossRefCandidate.exists(), 
 				crossRefCandidate.exists() ? crossRefCandidate.length() : 0);
@@ -153,13 +152,13 @@ public class CreateResources {
 					int excerptLen = Math.min(2048, content.length());
 					String excerpt = content.substring(0, excerptLen);
 					String excerptEscaped = excerpt.replace("\n", "\\n").replace("\r", "\\r");
-					LOG.info("crossref-en.html firstExcerpt:\n{}", excerptEscaped);
+					logger.info("crossref-en.html firstExcerpt:\n{}", excerptEscaped);
 				} catch (Exception e) {
-					LOG.warn("Could not read crossref file for preview: {}", e.getMessage());
+					logger.warn("Could not read crossref file for preview: {}", e.getMessage());
 				}
 			}
 		} catch (Exception e) {
-			LOG.warn("Error while checking crossref file: {}", e.getMessage());
+			logger.warn("Error while checking crossref file: {}", e.getMessage());
 		}
 	}
 

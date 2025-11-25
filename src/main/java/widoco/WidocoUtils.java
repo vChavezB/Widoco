@@ -48,7 +48,6 @@ import org.semanticweb.owlapi.util.AutoIRIMapper;
 public class WidocoUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(WidocoUtils.class);
-	private static final Logger LOG = logger;
 	public static final char JAR_SEPARATOR = '/';
 	/**
 	 * Method that will download the ontology to document with Widoco.
@@ -57,7 +56,7 @@ public class WidocoUtils {
 	 * @throws java.lang.Exception
 	 */
 	public static void loadModelToDocument(Configuration c) throws Exception {
-		LOG.info("WidocoUtils.loadModelToDocument - cwd='{}' documentationURI='{}' tmpFile='{}' fromFile='{}' ontologyPath='{}'", 
+		logger.info("WidocoUtils.loadModelToDocument - cwd='{}' documentationURI='{}' tmpFile='{}' fromFile='{}' ontologyPath='{}'", 
 			new File(".").getAbsolutePath(), c.getDocumentationURI(), c.getTmpFile(), c.isFromFile(), c.getOntologyPath());
 		if (!c.isFromFile()) {
 			String newOntologyPath = c.getTmpFile().getAbsolutePath() + File.separator + "Ontology";
@@ -86,16 +85,16 @@ public class WidocoUtils {
 			
 			// Log ontology metrics after loading
 			java.util.Optional<IRI> ontIri = ontology.getOntologyID().getOntologyIRI();
-			LOG.info("Loaded ontology. ontologyIRI present: {}", ontIri.isPresent());
-			LOG.info("ontologyIRI={}", ontIri.orElse(null));
-			LOG.info("Ontology metrics: axioms={}, classes={}, individuals={}", 
+			logger.info("Loaded ontology. ontologyIRI present: {}", ontIri.isPresent());
+			logger.info("ontologyIRI={}", ontIri.orElse(null));
+			logger.info("Ontology metrics: axioms={}, classes={}, individuals={}", 
 				ontology.getAxiomCount(), ontology.getClassesInSignature().size(), ontology.getIndividualsInSignature().size());
 			
 			c.getMainOntology().setMainOntology(ontology);
 			c.getMainOntology().setMainOntologyManager(manager);
 			c.getMainOntology().getOWLAPIModel().setOWLOntologyManager(manager);
 		} catch (Exception e) {
-			LOG.error("Error loading ontology from path: {}", c.getOntologyPath(), e);
+			logger.error("Error loading ontology from path: {}", c.getOntologyPath(), e);
 			throw e;
 		}
 	}
