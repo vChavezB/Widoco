@@ -17,9 +17,11 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -75,8 +77,19 @@ public class ExternalEntitiesTest {
     }
 
     @BeforeClass
-    public static void setUpClass() {
-
+    public static void setUpClass() throws IOException {
+        // Ensure minimal config.properties to avoid missing-file warnings during tests
+        File cfgDir = new File("target/config");
+        if (!cfgDir.exists()) {
+            cfgDir.mkdirs();
+        }
+        File cfg = new File(cfgDir, "config.properties");
+        if (!cfg.exists()) {
+            try (FileWriter w = new FileWriter(cfg)) {
+                w.write("documentationURI=myDoc\n");
+                w.write("overwriteAll=true\n");
+            }
+        }
     }
 
     @AfterClass
@@ -94,14 +107,17 @@ public class ExternalEntitiesTest {
     }
 
     private static void deleteFiles(File folder){
+        if (folder==null || !folder.exists()) return;
         String[]entries = folder.list();
-        for(String s: entries){
-            File currentFile = new File(folder.getPath(),s);
-            if(currentFile.isDirectory()){
-                deleteFiles(currentFile);
-            }
-            else{
-                currentFile.delete();
+        if (entries!=null) {
+            for(String s: entries){
+                File currentFile = new File(folder.getPath(),s);
+                if(currentFile.isDirectory()){
+                    deleteFiles(currentFile);
+                }
+                else{
+                    currentFile.delete();
+                }
             }
         }
         folder.delete();
@@ -241,8 +257,8 @@ public class ExternalEntitiesTest {
     static void testIndividual(Document doc, String iri,String expectedClassIRI,String expectedType) {
         String entityType = getIndividualClassType(doc,iri);
         String classIRI = getIndividualClassIRI(doc,iri);
-        assert(entityType.equals(expectedType));
-        assert(classIRI.equals(expectedClassIRI));
+        assertEquals(expectedType, entityType);
+        assertEquals(expectedClassIRI, classIRI);
     }
 
 
@@ -255,10 +271,20 @@ public class ExternalEntitiesTest {
      * @param expectedObjType
      */
     static void testFact(Fact fact,String expectedPredicateIRI, String expectedPredicateType, String expectedObjectIRI, String expectedObjType) {
-        assert(fact.getPredicateIRI().equals(expectedPredicateIRI));
-        assert(fact.getPredicateType().equals(expectedPredicateType));
-        assert(fact.getObjectIRI().equals(expectedObjectIRI));
-        assert(fact.getObjectType().equals(expectedObjType));
+        assertEquals(expectedPredicateIRI, fact.getPredicateIRI());
+        assertEquals(expectedPredicateType, fact.getPredicateType());
+        assertEquals(expectedObjectIRI, fact.getObjectIRI());
+        assertEquals(expectedObjType, fact.getObjectType());
+    }
+
+    // New helper to find a fact by predicate IRI to avoid relying on ordering
+    private static Fact findFactByPredicate(ArrayList<Fact> facts, String predicateIRI) {
+        for (Fact f : facts) {
+            if (predicateIRI.equals(f.getPredicateIRI())) {
+                return f;
+            }
+        }
+        return null;
     }
 
     /**
@@ -266,47 +292,59 @@ public class ExternalEntitiesTest {
      * Generate the html and look for the facts and
      * entity descriptors generated with sup tags.
      */
-//    @org.junit.Test
-//    public void testExternalEntityOntology() {
-//        System.out.println("Testing Ontology: External Entity");
-//
-//        try{
-//            String pathToOnto = "test" + File.separator + "external-entity.ttl";
-//            c.setFromFile(true);
-//            this.c.setOntologyPath(pathToOnto);
-//            //read the model from file
-//            WidocoUtils.loadModelToDocument(c);
-//            CreateResources.generateDocumentation(c.getDocumentationURI(), c, c.getTmpFile());
-//            File crossRefFile = new File(c.getDocumentationURI()+"/sections/crossref-en.html");
-//            Document crossRefDoc = Jsoup.parse(crossRefFile, "UTF-8");
-//            // Look for superclass of ExtProject
-//            // i.e., http://xmlns.com/foaf/0.1/Project should be recognized as type-c
-//            String extProjectSuperClassType = getSuperClassType(crossRefDoc,ONT_NS+"ExtProject");
-//            assert(extProjectSuperClassType!=null);
-//            assert(extProjectSuperClassType.equals("type-c"));
-//            testIndividual(crossRefDoc,ONT_NS+"PersonA","http://www.w3.org/2000/10/swap/pim/contact#Person","type-c");
-//            testIndividual(crossRefDoc,ONT_NS+"PersonB",ONT_NS+"LocalPerson","type-c");
-//            testIndividual(crossRefDoc,ONT_NS+"Project1",ONT_NS+"ExtProject","type-c");
-//            ArrayList<Fact> personAFacts = getIndividualFacts(crossRefDoc, ONT_NS + "PersonA");
-//            assert(personAFacts.size() == 1);
-//            testFact(personAFacts.get(0),"http://my-external-ont.com/ext/Annotation","type-ap",
-//                                            "literal","\"external annotation\"@en");
-//            ArrayList<Fact> personBFacts = getIndividualFacts(crossRefDoc, ONT_NS + "PersonB");
-//            assert(personBFacts.size() == 2);
-//            testFact(personBFacts.get(0),"http://xmlns.com/foaf/0.1/knows","type-op",
-//                    "http://www.external-entity.com/testCase/PersonA","type-ni");
-//            testFact(personBFacts.get(1),"http://xmlns.com/foaf/0.1/age","type-dp",
-//                    "literal","\"30\"^^integer");
-//
-//            ArrayList<Fact> project1Facts = getIndividualFacts(crossRefDoc, ONT_NS + "Project1");
-//            assert(project1Facts.size() == 2);
-//            testFact(project1Facts.get(0),"http://xmlns.com/foaf/0.1/fundedBy","type-op",
-//                                            "http://www.external-entity.com/testCase/PersonA","type-ni");
-//            testFact(project1Facts.get(1),"http://xmlns.com/foaf/0.1/title","type-dp",
-//                                            "literal","\"The External Project\"@en");
-//
-//        }catch(Exception e){
-//            fail("Error while running test "+e.getMessage());
-//        }
-//    }
+    @org.junit.Test
+    public void testExternalEntityOntology() {
+        System.out.println("Testing Ontology: External Entity");
+
+        try{
+            String pathToOnto = "test" + File.separator + "external-entity.ttl";
+            c.setFromFile(true);
+            this.c.setOntologyPath(pathToOnto);
+            //read the model from file
+            WidocoUtils.loadModelToDocument(c);
+            CreateResources.generateDocumentation(c.getDocumentationURI(), c, c.getTmpFile());
+            File crossRefFile = new File(c.getDocumentationURI()+"/sections/crossref-en.html");
+            Document crossRefDoc = Jsoup.parse(crossRefFile, "UTF-8");
+            // Look for superclass of ExtProject
+            // i.e., http://xmlns.com/foaf/0.1/Project should be recognized as type-c
+            String extProjectSuperClassType = getSuperClassType(crossRefDoc,ONT_NS+"ExtProject");
+            assertNotNull(extProjectSuperClassType);
+            assertEquals("type-c", extProjectSuperClassType);
+            testIndividual(crossRefDoc,ONT_NS+"PersonA","http://www.w3.org/2000/10/swap/pim/contact#Person","type-c");
+            testIndividual(crossRefDoc,ONT_NS+"PersonB",ONT_NS+"LocalPerson","type-c");
+            testIndividual(crossRefDoc,ONT_NS+"Project1",ONT_NS+"ExtProject","type-c");
+
+            ArrayList<Fact> personAFacts = getIndividualFacts(crossRefDoc, ONT_NS + "PersonA");
+            assertEquals(1, personAFacts.size());
+            Fact aFact = findFactByPredicate(personAFacts, "http://my-external-ont.com/ext/Annotation");
+            assertNotNull(aFact);
+            testFact(aFact,"http://my-external-ont.com/ext/Annotation","type-ap",
+                                            "literal","\"external annotation\"@en");
+
+            ArrayList<Fact> personBFacts = getIndividualFacts(crossRefDoc, ONT_NS + "PersonB");
+            assertEquals(2, personBFacts.size());
+            Fact knowsFact = findFactByPredicate(personBFacts, "http://xmlns.com/foaf/0.1/knows");
+            assertNotNull(knowsFact);
+            testFact(knowsFact,"http://xmlns.com/foaf/0.1/knows","type-op",
+                    "http://www.external-entity.com/testCase/PersonA","type-ni");
+            Fact ageFact = findFactByPredicate(personBFacts, "http://xmlns.com/foaf/0.1/age");
+            assertNotNull(ageFact);
+            testFact(ageFact,"http://xmlns.com/foaf/0.1/age","type-dp",
+                    "literal","\"30\"^^integer");
+
+            ArrayList<Fact> project1Facts = getIndividualFacts(crossRefDoc, ONT_NS + "Project1");
+            assertEquals(2, project1Facts.size());
+            Fact fundedFact = findFactByPredicate(project1Facts, "http://xmlns.com/foaf/0.1/fundedBy");
+            assertNotNull(fundedFact);
+            testFact(fundedFact,"http://xmlns.com/foaf/0.1/fundedBy","type-op",
+                                            "http://www.external-entity.com/testCase/PersonA","type-ni");
+            Fact titleFact = findFactByPredicate(project1Facts, "http://xmlns.com/foaf/0.1/title");
+            assertNotNull(titleFact);
+            testFact(titleFact,"http://xmlns.com/foaf/0.1/title","type-dp",
+                                            "literal","\"The External Project\"@en");
+
+        }catch(Exception e){
+            fail("Error while running test "+e.getMessage());
+        }
+    }
 }
