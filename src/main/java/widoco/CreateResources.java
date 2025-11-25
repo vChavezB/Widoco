@@ -51,6 +51,10 @@ public class CreateResources {
 	private static final Logger logger = LoggerFactory.getLogger(CreateResources.class);
 
 	public static void generateDocumentation(String outFolder, Configuration c, File lodeResources) throws Exception {
+		logger.debug("Starting documentation generation - documentationURI: {}, tmpFolder: {}", 
+			c.getDocumentationURI(), 
+			c.getTmpFile() != null ? c.getTmpFile().getAbsolutePath() : "null");
+		
 		String lodeContent;
 		String folderOut = outFolder;
 		Properties languageFile = new Properties();
@@ -362,6 +366,25 @@ public class CreateResources {
             if(!c.isIncludeAllSectionsInOneDocument()){
                 saveDocument(path + File.separator + "crossref-" + c.getCurrentLanguage() + ".html", textToWrite, c);
             }
+            
+            // Log crossref file details for debugging
+            try {
+                File crossRefFile = new File(path + File.separator + "crossref-" + c.getCurrentLanguage() + ".html");
+                logger.debug("CrossRef file path: {}", crossRefFile.getAbsolutePath());
+                logger.debug("CrossRef file exists: {}", crossRefFile.exists());
+                if (crossRefFile.exists()) {
+                    logger.debug("CrossRef file size: {} bytes", crossRefFile.length());
+                    // Log a snippet of the file content (first 2KB)
+                    if (textToWrite != null && textToWrite.length() > 0) {
+                        int snippetLength = Math.min(2000, textToWrite.length());
+                        String snippet = textToWrite.substring(0, snippetLength).replace("\n", "\\n").replace("\r", "\\r");
+                        logger.debug("CrossRef content snippet (first {} chars): {}", snippetLength, snippet);
+                    }
+                }
+            } catch (Exception e) {
+                logger.warn("Error logging crossref file details: {}", e.getMessage());
+            }
+            
             return textToWrite;
 	}
 

@@ -234,9 +234,16 @@ public class Configuration {
 
 	private void loadPropertyFile(String path) throws IOException {
 		try {
+			logger.debug("Attempting to load configuration from path: {}", path);
+			File configFile = new File(path);
+			logger.debug("Config file exists: {}", configFile.exists());
 			initializeOntology();
 			// this forces the property file to be in UTF 8 instead of the ISO
 			propertyFile.load(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+			// Log sample properties after loading
+			String docUri = propertyFile.getProperty(Constants.PF_ONT_NAMESPACE_URI, "");
+			String overwrite = String.valueOf(this.overwriteAll);
+			logger.debug("Loaded config - documentationURI: {}, overwriteAll: {}", docUri, overwrite);
 			// We try to load from the configuration file. If it fails, then we should try
 			// to load from the ontology. Then, if it fails, we should ask the user.
 			abstractSection = propertyFile.getProperty(Constants.PF_ABSTRACT_SECTION_CONTENT);
@@ -416,6 +423,7 @@ public class Configuration {
 		} catch (IOException ex) {
 			// Only a warning, as we can continue safely without a property file.
 			logger.warn("Error while reading configuration properties from [" + path + "]: " + ex.getMessage());
+			logger.debug("Configuration load exception details:", ex);
 			throw ex;
 		}
 	}

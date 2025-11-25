@@ -56,6 +56,17 @@ public class WidocoUtils {
 	 * @throws java.lang.Exception
 	 */
 	public static void loadModelToDocument(Configuration c) throws Exception {
+		try {
+			logger.debug("Working directory: {}", new File(".").getAbsolutePath());
+			logger.debug("Loading model - documentationURI: {}, tmpFile: {}, isFromFile: {}, ontologyPath: {}", 
+				c.getDocumentationURI(), 
+				c.getTmpFile() != null ? c.getTmpFile().getAbsolutePath() : "null",
+				c.isFromFile(), 
+				c.getOntologyPath());
+		} catch (Exception e) {
+			logger.warn("Error logging configuration details: {}", e.getMessage());
+		}
+		
 		if (!c.isFromFile()) {
 			String newOntologyPath = c.getTmpFile().getAbsolutePath() + File.separator + "Ontology";
 			downloadOntology(c.getOntologyURI(), newOntologyPath);
@@ -77,11 +88,28 @@ public class WidocoUtils {
 			}
 		}
 
-		OWLOntology ontology = manager
-				.loadOntologyFromOntologyDocument(new FileDocumentSource(new File(c.getOntologyPath())), loadingConfig);
-		c.getMainOntology().setMainOntology(ontology);
-		c.getMainOntology().setMainOntologyManager(manager);
-		c.getMainOntology().getOWLAPIModel().setOWLOntologyManager(manager);
+		try {
+			OWLOntology ontology = manager
+					.loadOntologyFromOntologyDocument(new FileDocumentSource(new File(c.getOntologyPath())), loadingConfig);
+			
+			// Log ontology loading details
+			logger.debug("Ontology loaded successfully from: {}", c.getOntologyPath());
+			if (ontology.getOntologyID().getOntologyIRI().isPresent()) {
+				logger.debug("Ontology IRI: {}", ontology.getOntologyID().getOntologyIRI().get());
+			} else {
+				logger.debug("Ontology IRI: Not present");
+			}
+			logger.debug("Ontology axiom count: {}", ontology.getAxiomCount());
+			logger.debug("Ontology classes count: {}", ontology.getClassesInSignature().size());
+			logger.debug("Ontology individuals count: {}", ontology.getIndividualsInSignature().size());
+			
+			c.getMainOntology().setMainOntology(ontology);
+			c.getMainOntology().setMainOntologyManager(manager);
+			c.getMainOntology().getOWLAPIModel().setOWLOntologyManager(manager);
+		} catch (Exception e) {
+			logger.error("Failed to load ontology from path: {}", c.getOntologyPath(), e);
+			throw e;
+		}
 	}
 
 	/**
