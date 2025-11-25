@@ -46,7 +46,7 @@ import licensius.GetLicense;
 public class Configuration {
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
-	private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(Configuration.class);
+	private static final Logger LOG = logger;
 
 	private Ontology mainOntologyMetadata;
 	/**
